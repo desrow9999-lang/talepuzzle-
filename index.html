@@ -289,7 +289,7 @@
         <div class="card">
             <label for="themeInput">✨ 幾何学ステンドグラス・パズル生成</label>
             <div class="input-group">
-                <input type="text" id="themeInput" value="窓の外を見つめる犬" placeholder="例: 窓の外を見つめる犬、深海の孤城...">
+                <input type="text" id="themeInput" value="ウサギとカメ" placeholder="例: ウサギとカメ、窓の外を見つめる犬...">
                 <button class="btn" id="generateBtn">生成</button>
             </div>
             
@@ -306,7 +306,7 @@
                 <canvas id="previewCanvas" width="160" height="160"></canvas>
             </div>
             <div class="preview-info">
-                <strong id="previewTitle">テーマ: 窓の外を見つめる犬</strong>
+                <strong id="previewTitle">テーマ: ウサギとカメ</strong>
                 <span>解くと光が透過し、至高のステンドグラスアートに！</span>
             </div>
         </div>
@@ -326,7 +326,7 @@
         let gridSize = 2;
         let boardState = [];
         let selectedIndex = null;
-        let currentTheme = "窓の外を見つめる犬";
+        let currentTheme = "ウサギとカメ";
 
         const themeInput = document.getElementById('themeInput');
         const generateBtn = document.getElementById('generateBtn');
@@ -348,15 +348,22 @@
             };
         });
 
+        // 確実なキーワード＆マルチテーマ対応アセットマッパー
         function getThemeAsset(theme) {
             let colors = ['#d35400', '#e67e22', '#c0392b'];
-            let symbol = "🐶";
+            let symbol = "✨";
+            let secondarySymbol = "";
 
-            if (theme.match(/犬|いぬ|パピー|ワンコ|ポチ/)) {
-                symbol = theme.match(/窓|外|見つめ|遠吠え/) ? "🐕" : "🐶";
+            // 複数キーワード・複合語の完全一致・部分一致ハンドリング
+            if (theme.includes("ウサギ") && theme.includes("カメ")) {
+                symbol = "🐇";
+                secondarySymbol = "🐢";
+                colors = ['#27ae60', '#f39c12', '#d35400'];
+            } else if (theme.match(/犬|いぬ|パピー|ワンコ|ポチ/)) {
+                symbol = "🐕";
                 colors = ['#d35400', '#e67e22', '#f39c12'];
             } else if (theme.match(/猫|ねこ|ネコ|野良|子猫/)) {
-                symbol = theme.match(/肉|食|ハンター/) ? "🥩" : "🐱";
+                symbol = theme.match(/肉|食/) ? "🥩" : "🐱";
                 colors = ['#c0392b', '#d35400', '#e74c3c'];
             } else if (theme.match(/鬼|魔王|悪魔|ホラー|ダーク/)) {
                 symbol = "👹";
@@ -371,6 +378,7 @@
                 symbol = "🌲";
                 colors = ['#27ae60', '#16a085', '#2c3e50'];
             } else {
+                // 一般的なテキストの場合も文字コードから安定した固有絵文字を割り当て
                 let hash = 0;
                 for (let i = 0; i < theme.length; i++) hash = theme.charCodeAt(i) + ((hash << 5) - hash);
                 const palettes = [
@@ -380,10 +388,10 @@
                     ['#c0392b', '#8e44ad', '#d35400']
                 ];
                 colors = palettes[Math.abs(hash) % palettes.length];
-                const symbols = ["✨", "🔥", "💎", "⚡", "🗝️", "🛡️", "🔮", "🗡️", "👑", "🌟"];
-                symbol = symbols[Math.abs(hash >> 3) % symbols.length];
+                const symbols = ["💎", "🔥", "⚡", "🗝️", "🛡️", "🔮", "🗡️", "👑", "🌟", "🌸"];
+                symbol = symbols[Math.abs(hash) % symbols.length];
             }
-            return { symbol, colors };
+            return { symbol, secondarySymbol, colors };
         }
 
         // 幾何学ステンドグラス・モザイク生成エンジン
@@ -391,9 +399,8 @@
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
             const h = canvas.height;
-            const { symbol, colors } = getThemeAsset(theme);
+            const { symbol, secondarySymbol, colors } = getThemeAsset(theme);
 
-            // 背景ベース（未完成時は重厚なダークナイト、完成時は教会に差し込む光のクリアカラー）
             if (!isCompleted) {
                 ctx.fillStyle = "#0f1318";
                 ctx.fillRect(0, 0, w, h);
@@ -419,7 +426,6 @@
                 return x - Math.floor(x);
             }
 
-            // 幾何学的なステンドグラス・ケーム（鉛の網目フレーム）とガラス片の塗り分け
             for (let y = 0; y < rows; y++) {
                 for (let x = 0; x < cols; x++) {
                     let tileColorIdx = (x + y * 3 + seed) % colors.length;
@@ -455,23 +461,30 @@
                 }
             }
 
-            // シンボル周囲のステンドグラス装飾円環
+            // ステンドグラス装飾円環
             ctx.strokeStyle = isCompleted ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0.25)";
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.arc(w * 0.5, h * 0.38, w * 0.28, 0, Math.PI * 2);
             ctx.stroke();
 
-            // メインアイコン描画（テーマに一致したもの）
-            ctx.font = `${w * 0.38}px sans-serif`;
+            // メインアイコン描画（ダブルシンボル対応）
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.shadowColor = isCompleted ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.9)";
             ctx.shadowBlur = isCompleted ? 15 : 5;
-            ctx.fillText(symbol, w / 2, h * 0.38);
+
+            if (secondarySymbol) {
+                ctx.font = `${w * 0.28}px sans-serif`;
+                ctx.fillText(symbol, w * 0.36, h * 0.38);
+                ctx.fillText(secondarySymbol, w * 0.64, h * 0.38);
+            } else {
+                ctx.font = `${w * 0.38}px sans-serif`;
+                ctx.fillText(symbol, w / 2, h * 0.38);
+            }
             ctx.shadowBlur = 0;
 
-            // ステンドグラス下部のタイトルプレート（鉛の枠付き）
+            // タイトルプレート
             ctx.fillStyle = isCompleted ? "rgba(15, 19, 24, 0.85)" : "rgba(10, 13, 16, 0.95)";
             ctx.fillRect(w * 0.05, h * 0.72, w * 0.9, h * 0.2);
             
@@ -479,7 +492,6 @@
             ctx.lineWidth = 2;
             ctx.strokeRect(w * 0.05, h * 0.72, w * 0.9, h * 0.2);
 
-            // タイトル文字
             ctx.fillStyle = isCompleted ? "#ffffff" : "#b2bec3";
             let fontSize = w * 0.075;
             if (theme.length > 8) fontSize = w * 0.062;
@@ -496,8 +508,7 @@
         }
 
         function getStory(theme) {
-            const { symbol } = getThemeAsset(theme);
-            return `📖 『${theme}の物語』\n\n教会の薔薇窓を模した幾何学的なステンドグラスの向こう側、夕暮れの淡い光に包まれた窓辺で、"${theme}"は独自の矜持を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一欠片の温もり、そして胸に秘めた切なさは、ガラスの向こうの夜の闇の中で確かな熱を帯びていきます。\n\n幾何学的なステンドグラスのピースを一つ残らず噛み合わせ、モノクロームの枠組みに真実の光を灯したあなたへ。\nこの物語の目撃者となった今、日常の枠を超えたドラマが、あなたの現実の世界でも力強く動き出します――。`;
+            return `📖 『${theme}の物語』\n\n教会の薔薇窓を模した幾何学的なステンドグラスの向こう側、夕暮れの淡い光に包まれた世界で、"${theme}"はそれぞれの譲れない流儀を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一瞬の奇跡と静かな確信は、ガラスの向こうの夜の闇の中で確かな熱を帯びていきます。\n\n幾何学的なステンドグラスのピースを一つ残らず噛み合わせ、モノクロームの枠組みに真実の光を灯したあなたへ。\nこの物語の目撃者となった今、日常の枠を超えたドラマが、あなたの現実の世界でも力強く動き出します――。`;
         }
 
         function updatePreview() {
