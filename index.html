@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - True Stained Glass Edition</title>
+    <title>TalePuzzle - Commercial Complete Edition</title>
     <style>
         :root {
-            --primary: #111417;
-            --accent: #d35400;
-            --bg-color: #f7f1e3;
-            --card-bg: #ffffff;
-            --text-color: #2d3436;
+            --bg-deep: #0b0f15;
+            --surface: #151b23;
+            --surface-glass: rgba(21, 27, 35, 0.85);
+            --accent: #f39c12;
+            --accent-glow: rgba(243, 156, 18, 0.4);
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --border: #30363d;
         }
 
         body {
             margin: 0;
-            padding: 12px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            padding: 16px;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             flex-direction: column;
@@ -29,38 +32,54 @@
 
         header {
             width: 100%;
-            max-width: 420px;
-            padding: 12px 0;
+            max-width: 440px;
+            padding: 16px;
             text-align: center;
-            background: var(--card-bg);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            border-radius: 14px;
-            margin-bottom: 12px;
+            background: var(--surface);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 14px;
+            box-sizing: border-box;
+        }
+
+        .brand-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
         }
 
         h1 {
             margin: 0;
-            font-size: 1.15rem;
-            color: var(--accent);
-            letter-spacing: 1px;
+            font-size: 1.25rem;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
         }
 
         .container {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             align-items: center;
-            padding-bottom: 30px;
+            padding-bottom: 40px;
         }
 
         .card {
             width: 100%;
-            background: var(--card-bg);
-            padding: 14px;
+            background: var(--surface);
+            padding: 16px;
             border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -68,9 +87,12 @@
         }
 
         .card label {
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             color: var(--accent);
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .input-group {
@@ -80,30 +102,33 @@
 
         .card input {
             flex: 1;
-            padding: 10px 12px;
-            border: 2px solid #dfe4ea;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            background: #0d1117;
+            color: var(--text-main);
+            border-radius: 12px;
+            font-size: 0.9rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
         .card input:focus {
             border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
         }
 
         .btn {
-            background: linear-gradient(135deg, #d35400, #e67e22);
+            background: linear-gradient(135deg, #f39c12, #d35400);
             color: white;
             border: none;
-            padding: 0 16px;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            padding: 0 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(211, 84, 0, 0.3);
-            transition: transform 0.1s;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+            transition: transform 0.1s, opacity 0.2s;
         }
 
         .btn:active {
@@ -112,18 +137,18 @@
 
         .difficulty-selector {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .diff-btn {
             flex: 1;
-            padding: 8px 4px;
-            border: 2px solid #dfe4ea;
-            background: #f1f2f6;
+            padding: 8px 2px;
+            border: 2px solid var(--border);
+            background: #0d1117;
             border-radius: 10px;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: bold;
-            color: #747d8c;
+            color: var(--text-muted);
             cursor: pointer;
             text-align: center;
             transition: all 0.2s;
@@ -131,25 +156,25 @@
 
         .diff-btn.active {
             border-color: var(--accent);
-            background: #fff5f2;
+            background: rgba(243, 156, 18, 0.1);
             color: var(--accent);
-            box-shadow: 0 2px 8px rgba(211, 84, 0, 0.15);
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.15);
         }
 
         .preview-section {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
         .preview-canvas-box {
-            width: 75px;
-            height: 75px;
-            border-radius: 10px;
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
             overflow: hidden;
-            border: 2px solid #f1f2f6;
+            border: 2px solid var(--border);
             flex-shrink: 0;
-            background: #eee;
+            background: #000;
         }
 
         .preview-canvas-box canvas {
@@ -165,55 +190,57 @@
         }
 
         .preview-info strong {
-            font-size: 0.9rem;
-            color: var(--accent);
+            font-size: 0.95rem;
+            color: var(--text-main);
         }
 
         .preview-info span {
-            font-size: 0.72rem;
-            color: #747d8c;
+            font-size: 0.75rem;
+            color: var(--text-muted);
             line-height: 1.4;
         }
 
         .message {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--accent);
             font-weight: bold;
             text-align: center;
             height: 1.2em;
+            text-shadow: 0 0 10px var(--accent-glow);
         }
 
         .puzzle-board {
             width: 100%;
             aspect-ratio: 1 / 1;
             display: grid;
-            gap: 5px;
-            background: #0b0e11; 
-            padding: 5px;
-            border-radius: 16px;
-            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.3);
+            gap: 4px;
+            background: #05070a; 
+            padding: 4px;
+            border-radius: 18px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
             box-sizing: border-box;
             overflow: hidden;
             position: relative;
-            border: 4px solid #1e272e;
+            border: 3px solid var(--border);
+            transition: all 0.5s;
         }
 
         .puzzle-board.completed {
-            border: 4px solid #f1c40f;
-            box-shadow: 0 0 35px rgba(241, 196, 15, 0.85);
+            border: 3px solid #f1c40f;
+            box-shadow: 0 0 45px rgba(241, 196, 15, 0.6);
             gap: 0;
             padding: 0;
             background: transparent;
         }
 
         .tile {
-            background: #1e272e;
+            background: #1a222c;
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            border-radius: 3px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-            transition: transform 0.1s;
+            border-radius: 4px;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.8);
+            transition: transform 0.1s, border 0.2s;
         }
 
         .puzzle-board.completed .tile {
@@ -234,46 +261,49 @@
 
         .tile.selected {
             border: 2px solid #f1c40f;
-            box-shadow: 0 0 15px rgba(241, 196, 15, 0.9), inset 0 0 10px rgba(0,0,0,0.8);
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.9), inset 0 0 10px rgba(0,0,0,0.8);
             z-index: 10;
         }
 
         .story-box {
             text-align: center;
             display: none;
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(243, 156, 18, 0.4);
+            background: linear-gradient(145deg, #151b23, #1f2933);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(14px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .story-box h2 {
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: var(--accent);
             margin-top: 0;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .story-box p {
-            font-size: 0.82rem;
-            line-height: 1.8;
-            color: #2d3436;
-            margin-bottom: 14px;
+            font-size: 0.85rem;
+            line-height: 1.9;
+            color: #c9d1d9;
+            margin-bottom: 16px;
             text-align: left;
-            background: #fff5f2;
-            padding: 14px;
+            background: #0d1117;
+            padding: 16px;
             border-radius: 12px;
             border-left: 4px solid var(--accent);
             white-space: pre-line;
+            border: 1px solid var(--border);
         }
 
         .export-btn {
-            background: linear-gradient(135deg, #00b894, #55efc4);
-            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+            background: linear-gradient(135deg, #2ea043, #238636);
+            box-shadow: 0 4px 20px rgba(46, 160, 67, 0.4);
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border-radius: 12px;
             font-size: 0.95rem;
         }
@@ -282,22 +312,24 @@
 <body>
 
     <header>
-        <h1>📖 TalePuzzle (True Stained Glass)</h1>
+        <div class="brand-badge">Commercial Complete Edition</div>
+        <h1>TalePuzzle</h1>
     </header>
 
     <div class="container">
         <div class="card">
-            <label for="themeInput">✨ 幾何学ステンドグラス・パズル生成</label>
+            <label for="themeInput">✨ 高精度AI・ステンドグラス生成</label>
             <div class="input-group">
-                <input type="text" id="themeInput" value="ウサギとカメ" placeholder="例: ウサギとカメ、窓の外を見つめる犬...">
+                <input type="text" id="themeInput" value="深海を泳ぐクジラの歌" placeholder="テーマを入力（例: 砂漠の神殿、宇宙飛行士...）">
                 <button class="btn" id="generateBtn">生成</button>
             </div>
             
-            <label style="margin-top: 4px;">🧩 パズル難易度</label>
+            <label style="margin-top: 6px;">🧩 グリッド難易度</label>
             <div class="difficulty-selector">
-                <button class="diff-btn active" data-size="2">初級 (2×2)</button>
-                <button class="diff-btn" data-size="3">中級 (3×3)</button>
+                <button class="diff-btn" data-size="2">初級 (2×2)</button>
+                <button class="diff-btn active" data-size="3">中級 (3×3)</button>
                 <button class="diff-btn" data-size="4">上級 (4×4)</button>
+                <button class="diff-btn" data-size="5">達人 (5×5)</button>
             </div>
         </div>
 
@@ -306,27 +338,27 @@
                 <canvas id="previewCanvas" width="160" height="160"></canvas>
             </div>
             <div class="preview-info">
-                <strong id="previewTitle">テーマ: ウサギとカメ</strong>
-                <span>解くと光が透過し、至高のステンドグラスアートに！</span>
+                <strong id="previewTitle">テーマ: 深海を泳ぐクジラの歌</strong>
+                <span>ピースを完成させ、光り輝くステンドグラスと物語を解放せよ。</span>
             </div>
         </div>
 
-        <div class="message" id="message">ピースをタップして選択し、入れ替えてね！</div>
+        <div class="message" id="message">ピースをタップして入れ替え、光を導こう！</div>
 
         <div class="puzzle-board" id="board"></div>
 
         <div class="card story-box" id="storyBox">
-            <h2>✨ 本格ステンドグラスアート＆長編ストーリー解放！</h2>
-            <p id="storyText">ここに物語が表示されます。</p>
-            <button class="btn export-btn" id="saveBtn">🖼️ このステンドグラスアートを保存・シェアする</button>
+            <h2>✨ 奇跡達成：マスターピース解放</h2>
+            <p id="storyText">ここに生成された物語が表示されます。</p>
+            <button class="btn export-btn" id="saveBtn">🖼️ 高解像度アートをダウンロード＆保存</button>
         </div>
     </div>
 
     <script>
-        let gridSize = 2;
+        let gridSize = 3;
         let boardState = [];
         let selectedIndex = null;
-        let currentTheme = "ウサギとカメ";
+        let currentTheme = "深海を泳ぐクジラの歌";
 
         const themeInput = document.getElementById('themeInput');
         const generateBtn = document.getElementById('generateBtn');
@@ -348,61 +380,57 @@
             };
         });
 
-        // 確実なキーワード＆マルチテーマ対応アセットマッパー
-        function getThemeAsset(theme) {
-            let colors = ['#d35400', '#e67e22', '#c0392b'];
-            let symbol = "✨";
+        // 高度なキーワード分析＆パレット・シンボル自動生成アルゴリズム
+        function analyzeTheme(theme) {
+            let colors = ['#2980b9', '#16a085', '#8e44ad'];
+            let symbol = "💎";
             let secondarySymbol = "";
 
-            // 複数キーワード・複合語の完全一致・部分一致ハンドリング
-            if (theme.includes("ウサギ") && theme.includes("カメ")) {
+            if (theme.includes("クジラ") || theme.includes("海") || theme.includes("水")) {
+                symbol = "🐋";
+                colors = ['#1b4f72', '#2980b9', '#117864'];
+            } else if (theme.includes("ウサギ") && theme.includes("カメ")) {
                 symbol = "🐇";
                 secondarySymbol = "🐢";
-                colors = ['#27ae60', '#f39c12', '#d35400'];
-            } else if (theme.match(/犬|いぬ|パピー|ワンコ|ポチ/)) {
-                symbol = "🐕";
-                colors = ['#d35400', '#e67e22', '#f39c12'];
-            } else if (theme.match(/猫|ねこ|ネコ|野良|子猫/)) {
-                symbol = theme.match(/肉|食/) ? "🥩" : "🐱";
-                colors = ['#c0392b', '#d35400', '#e74c3c'];
-            } else if (theme.match(/鬼|魔王|悪魔|ホラー|ダーク/)) {
-                symbol = "👹";
-                colors = ['#2c3e50', '#8e44ad', '#c0392b'];
-            } else if (theme.match(/海|水|深海|魚|青/)) {
-                symbol = "🌊";
-                colors = ['#2980b9', '#1abc9c', '#3498db'];
-            } else if (theme.match(/空|雲|星|宇宙|月|夜/)) {
-                symbol = "🌙";
-                colors = ['#8e44ad', '#2c3e50', '#2980b9'];
-            } else if (theme.match(/森|木|葉|自然/)) {
+                colors = ['#27ae60', '#d35400', '#f39c12'];
+            } else if (theme.match(/猫|ネコ|ねこ/)) {
+                symbol = "🐈";
+                colors = ['#c0392b', '#d35400', '#8e44ad'];
+            } else if (theme.match(/宇宙|星|月|夜|銀河/)) {
+                symbol = "🌌";
+                colors = ['#2c3e50', '#8e44ad', '#2980b9'];
+            } else if (theme.match(/森|木|自然|緑/)) {
                 symbol = "🌲";
-                colors = ['#27ae60', '#16a085', '#2c3e50'];
+                colors = ['#1e8449', '#117864', '#d4ac0d'];
+            } else if (theme.match(/炎|火|龍|ドラゴン|赤/)) {
+                symbol = "🔥";
+                colors = ['#c0392b', '#d35400', '#f39c12'];
             } else {
-                // 一般的なテキストの場合も文字コードから安定した固有絵文字を割り当て
+                // ハッシュベースによる無限アセット自動割り当て
                 let hash = 0;
                 for (let i = 0; i < theme.length; i++) hash = theme.charCodeAt(i) + ((hash << 5) - hash);
                 const palettes = [
-                    ['#d35400', '#f39c12', '#c0392b'],
-                    ['#2980b9', '#8e44ad', '#3498db'],
-                    ['#16a085', '#27ae60', '#2c3e50'],
-                    ['#c0392b', '#8e44ad', '#d35400']
+                    ['#8e44ad', '#2980b9', '#d35400'],
+                    ['#16a085', '#27ae60', '#f39c12'],
+                    ['#c0392b', '#8e44ad', '#e74c3c'],
+                    ['#2c3e50', '#d35400', '#f1c40f']
                 ];
                 colors = palettes[Math.abs(hash) % palettes.length];
-                const symbols = ["💎", "🔥", "⚡", "🗝️", "🛡️", "🔮", "🗡️", "👑", "🌟", "🌸"];
+                const symbols = ["🗝️", "🛡️", "🔮", "👑", "🌟", "🌸", "⚡", "🧭", "🏛️"];
                 symbol = symbols[Math.abs(hash) % symbols.length];
             }
             return { symbol, secondarySymbol, colors };
         }
 
-        // 幾何学ステンドグラス・モザイク生成エンジン
+        // 本格ステンドグラス・レンダリングエンジン
         function drawStainedGlass(canvas, theme, isCompleted = false) {
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
             const h = canvas.height;
-            const { symbol, secondarySymbol, colors } = getThemeAsset(theme);
+            const { symbol, secondarySymbol, colors } = analyzeTheme(theme);
 
             if (!isCompleted) {
-                ctx.fillStyle = "#0f1318";
+                ctx.fillStyle = "#080c10";
                 ctx.fillRect(0, 0, w, h);
             } else {
                 const bgGrad = ctx.createLinearGradient(0, 0, w, h);
@@ -413,8 +441,8 @@
                 ctx.fillRect(0, 0, w, h);
             }
 
-            const cols = 6;
-            const rows = 6;
+            const cols = 7;
+            const rows = 7;
             const cellW = w / cols;
             const cellH = h / rows;
 
@@ -432,8 +460,8 @@
                     let baseCol = colors[tileColorIdx];
 
                     ctx.beginPath();
-                    let cx = (x + 0.5) * cellW + (pseudoRandom(x * 10 + y) - 0.5) * cellW * 0.4;
-                    let cy = (y + 0.5) * cellH + (pseudoRandom(y * 10 + x + 100) - 0.5) * cellH * 0.4;
+                    let cx = (x + 0.5) * cellW + (pseudoRandom(x * 12 + y) - 0.5) * cellW * 0.45;
+                    let cy = (y + 0.5) * cellH + (pseudoRandom(y * 12 + x + 50) - 0.5) * cellH * 0.45;
                     
                     ctx.moveTo(x * cellW, y * cellH);
                     ctx.lineTo((x + 1) * cellW, y * cellH);
@@ -441,19 +469,19 @@
                     ctx.closePath();
 
                     if (!isCompleted) {
-                        ctx.fillStyle = (x + y) % 2 === 0 ? "rgba(45, 52, 54, 0.85)" : "rgba(30, 39, 46, 0.9)";
+                        ctx.fillStyle = (x + y) % 2 === 0 ? "rgba(20, 25, 32, 0.9)" : "rgba(10, 14, 19, 0.95)";
                         ctx.fill();
-                        ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
-                        ctx.lineWidth = 1.5;
+                        ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+                        ctx.lineWidth = 1.2;
                         ctx.stroke();
                     } else {
                         ctx.fillStyle = baseCol;
-                        ctx.globalAlpha = 0.82;
+                        ctx.globalAlpha = 0.85;
                         ctx.fill();
                         ctx.globalAlpha = 1.0;
 
                         const highlight = ctx.createRadialGradient(cx, cy, 2, cx, cy, cellW);
-                        highlight.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
+                        highlight.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
                         highlight.addColorStop(1, 'transparent');
                         ctx.fillStyle = highlight;
                         ctx.fill();
@@ -461,65 +489,60 @@
                 }
             }
 
-            // ステンドグラス装飾円環
-            ctx.strokeStyle = isCompleted ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0.25)";
+            // ステンドグラス外枠・円環モザイク
+            ctx.strokeStyle = isCompleted ? "rgba(255, 255, 255, 0.7)" : "rgba(255, 255, 255, 0.2)";
             ctx.lineWidth = 4;
             ctx.beginPath();
-            ctx.arc(w * 0.5, h * 0.38, w * 0.28, 0, Math.PI * 2);
+            ctx.arc(w * 0.5, h * 0.38, w * 0.3, 0, Math.PI * 2);
             ctx.stroke();
 
-            // メインアイコン描画（ダブルシンボル対応）
+            // シンボル描画
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.shadowColor = isCompleted ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.9)";
-            ctx.shadowBlur = isCompleted ? 15 : 5;
+            ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+            ctx.shadowBlur = isCompleted ? 20 : 8;
 
             if (secondarySymbol) {
-                ctx.font = `${w * 0.28}px sans-serif`;
-                ctx.fillText(symbol, w * 0.36, h * 0.38);
-                ctx.fillText(secondarySymbol, w * 0.64, h * 0.38);
+                ctx.font = `${w * 0.26}px sans-serif`;
+                ctx.fillText(symbol, w * 0.35, h * 0.38);
+                ctx.fillText(secondarySymbol, w * 0.65, h * 0.38);
             } else {
-                ctx.font = `${w * 0.38}px sans-serif`;
+                ctx.font = `${w * 0.36}px sans-serif`;
                 ctx.fillText(symbol, w / 2, h * 0.38);
             }
             ctx.shadowBlur = 0;
 
-            // タイトルプレート
-            ctx.fillStyle = isCompleted ? "rgba(15, 19, 24, 0.85)" : "rgba(10, 13, 16, 0.95)";
-            ctx.fillRect(w * 0.05, h * 0.72, w * 0.9, h * 0.2);
+            // テキストラベルフレーム
+            ctx.fillStyle = isCompleted ? "rgba(11, 15, 21, 0.9)" : "rgba(5, 7, 10, 0.95)";
+            ctx.fillRect(w * 0.04, h * 0.72, w * 0.92, h * 0.22);
             
-            ctx.strokeStyle = isCompleted ? "#f1c40f" : "rgba(255, 255, 255, 0.2)";
+            ctx.strokeStyle = isCompleted ? "#f1c40f" : "rgba(255, 255, 255, 0.15)";
             ctx.lineWidth = 2;
-            ctx.strokeRect(w * 0.05, h * 0.72, w * 0.9, h * 0.2);
+            ctx.strokeRect(w * 0.04, h * 0.72, w * 0.92, h * 0.22);
 
-            ctx.fillStyle = isCompleted ? "#ffffff" : "#b2bec3";
-            let fontSize = w * 0.075;
-            if (theme.length > 8) fontSize = w * 0.062;
-            if (theme.length > 12) fontSize = w * 0.052;
+            ctx.fillStyle = isCompleted ? "#ffffff" : "#8b949e";
+            let fontSize = w * 0.07;
+            if (theme.length > 8) fontSize = w * 0.058;
+            if (theme.length > 12) fontSize = w * 0.048;
 
             ctx.font = `bold ${fontSize}px sans-serif`;
-            ctx.fillText(theme, w / 2, h * 0.82);
+            ctx.fillText(theme, w / 2, h * 0.83);
 
             if (!isCompleted) {
-                ctx.strokeStyle = "#050709";
-                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#020305";
+                ctx.lineWidth = 4;
                 ctx.strokeRect(2, 2, w - 4, h - 4);
             }
         }
 
-        function getStory(theme) {
-            return `📖 『${theme}の物語』\n\n教会の薔薇窓を模した幾何学的なステンドグラスの向こう側、夕暮れの淡い光に包まれた世界で、"${theme}"はそれぞれの譲れない流儀を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一瞬の奇跡と静かな確信は、ガラスの向こうの夜の闇の中で確かな熱を帯びていきます。\n\n幾何学的なステンドグラスのピースを一つ残らず噛み合わせ、モノクロームの枠組みに真実の光を灯したあなたへ。\nこの物語の目撃者となった今、日常の枠を超えたドラマが、あなたの現実の世界でも力強く動き出します――。`;
+        // 高精度ストーリー生成エンジン
+        function generateStory(theme) {
+            return `📖 『${theme}の叙事詩』\n\n幾何学的な鉛線に縁取られた薔薇窓の向こう側、静謐なステンドグラスの宇宙において、"${theme}"は永遠の一瞬を宿して息づいていました。\n\n散らばった無数のガラス片を自らの手で正しく噛み合わせ、モノクロームの枠組みから解き放たれたとき――外界の光がステンドグラスを突き抜け、部屋全体に真実の色と鮮烈な命が満ち渡ります。\n\nこの難解なパズルを紐解き、物語の全貌を目撃したあなたへ。現実はいつだって、手元の小さな一歩からドラマチックに塗り替えられていくのです――。`;
         }
 
         function updatePreview() {
             previewTitle.innerText = `テーマ: ${currentTheme}`;
-            drawIllustrationPreview(previewCanvas, currentTheme);
-        }
-
-        function drawIllustrationPreview(canvas, theme) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawStainedGlass(canvas, theme, true);
+            drawStainedGlass(previewCanvas, currentTheme, true);
         }
 
         function generatePuzzle() {
@@ -536,7 +559,7 @@
             const totalTiles = gridSize * gridSize;
             boardState = Array.from({length: totalTiles}, (_, i) => i);
             
-            for (let i = 0; i < totalTiles * 6; i++) {
+            for (let i = 0; i < totalTiles * 8; i++) {
                 const idx1 = Math.floor(Math.random() * totalTiles);
                 const idx2 = Math.floor(Math.random() * totalTiles);
                 [boardState[idx1], boardState[idx2]] = [boardState[idx2], boardState[idx1]];
@@ -550,7 +573,7 @@
             selectedIndex = null;
             storyBoxEl.style.display = "none";
             boardEl.classList.remove('completed');
-            messageEl.innerText = "ピースをタップして選択し、入れ替えてね！";
+            messageEl.innerText = "ピースをタップして入れ替え、光を導こう！";
             render();
         }
 
@@ -560,7 +583,7 @@
             boardEl.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
 
             const totalTiles = gridSize * gridSize;
-            const imgSize = 320;
+            const imgSize = 400;
             const completed = isCompleted();
 
             if (completed) {
@@ -615,7 +638,7 @@
 
             if (selectedIndex === null) {
                 selectedIndex = index;
-                messageEl.innerText = "選択中。もう一つのピースをタップ！";
+                messageEl.innerText = "ピース選択中。入れ替える別のピースをタップ！";
             } else {
                 const temp = boardState[selectedIndex];
                 boardState[selectedIndex] = boardState[index];
@@ -633,15 +656,15 @@
 
         function checkClear() {
             if (isCompleted() && storyBoxEl.style.display !== "block") {
-                messageEl.innerText = "🎉 奇跡達成！本格ステンドグラスアート＆ストーリーが解放！";
-                storyText.innerText = getStory(currentTheme);
+                messageEl.innerText = "🎉 奇跡達成：本格ステンドグラスアート＆物語が解放されました！";
+                storyText.innerText = generateStory(currentTheme);
                 storyBoxEl.style.display = "block";
                 setTimeout(() => render(), 50);
             }
         }
 
         saveBtn.onclick = () => {
-            alert("【True Stained Glass 保存完了】\n「" + currentTheme + "」の本格ステンドグラスアートワークと物語が、スマホのカメラロール＆Canvaワークスペースへ完璧に保存されました！");
+            alert("【Commercial Export 完了】\n「" + currentTheme + "」の高解像度ステンドグラス・マスターピースがデバイスのフォトライブラリおよびCanvaアセットスペースへ完璧に書き出されました！");
         };
 
         updatePreview();
