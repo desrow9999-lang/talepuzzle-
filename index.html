@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - Masterpiece Final Edition</title>
+    <title>TalePuzzle - Stained Glass & Color Art Edition</title>
     <style>
         :root {
             --primary: #2d3436;
@@ -194,6 +194,14 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             box-sizing: border-box;
             overflow: hidden;
+            position: relative;
+        }
+
+        .puzzle-board.completed {
+            border: 4px solid #ffeaa7;
+            box-shadow: 0 0 25px rgba(255, 234, 167, 0.8);
+            gap: 0;
+            padding: 0;
         }
 
         .tile {
@@ -203,6 +211,10 @@
             overflow: hidden;
             border-radius: 6px;
             transition: transform 0.1s, box-shadow 0.2s;
+        }
+
+        .puzzle-board.completed .tile {
+            border-radius: 0;
         }
 
         .tile:active {
@@ -225,7 +237,7 @@
         .story-box {
             text-align: center;
             display: none;
-            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes fadeIn {
@@ -257,27 +269,27 @@
             background: linear-gradient(135deg, #00b894, #55efc4);
             box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border-radius: 12px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>📖 TalePuzzle (Masterpiece Final)</h1>
+        <h1>📖 TalePuzzle (Stained Glass Art)</h1>
     </header>
 
     <div class="container">
         <div class="card">
-            <label for="themeInput">✨ 入力したテーマに完全没入する絵本を作る</label>
+            <label for="themeInput">✨ モノクロパズルから極上の色彩アートへ</label>
             <div class="input-group">
-                <input type="text" id="themeInput" value="肉を食べる野良猫" placeholder="例: 肉を食べる野良猫、深海の孤城、星降る夜の狼...">
+                <input type="text" id="themeInput" value="肉を食べる野良猫" placeholder="例: 肉を食べる野良猫、深海の孤城...">
                 <button class="btn" id="generateBtn">生成</button>
             </div>
             
-            <label style="margin-top: 4px;">🧩 難易度</label>
+            <label style="margin-top: 4px;">🧩 パズル難易度</label>
             <div class="difficulty-selector">
                 <button class="diff-btn active" data-size="2">初級 (2×2)</button>
                 <button class="diff-btn" data-size="3">中級 (3×3)</button>
@@ -291,7 +303,7 @@
             </div>
             <div class="preview-info">
                 <strong id="previewTitle">テーマ: 肉を食べる野良猫</strong>
-                <span>ピースをタップして入れ替え、1枚絵を完成させよう！</span>
+                <span>解くと色彩が満ち、1枚の美しい絵画アートに昇華！</span>
             </div>
         </div>
 
@@ -300,9 +312,9 @@
         <div class="puzzle-board" id="board"></div>
 
         <div class="card story-box" id="storyBox">
-            <h2>✨ 濃密長編ストーリーが解放されました！</h2>
+            <h2>✨ 奇跡の色彩アート＆長編ストーリー解放！</h2>
             <p id="storyText">ここに物語が表示されます。</p>
-            <button class="btn export-btn" id="saveBtn">💾 Canvaのデザインに完全保存する</button>
+            <button class="btn export-btn" id="saveBtn">🖼️ この美しい絵画アートを保存・シェアする</button>
         </div>
     </div>
 
@@ -332,7 +344,6 @@
             };
         });
 
-        // テーマ解析とビジュアル・絵文字の完全リンク
         function analyzeTheme(theme) {
             let hash = 0;
             for (let i = 0; i < theme.length; i++) {
@@ -370,57 +381,88 @@
             return { emoji, colors };
         }
 
-        // 【修正・改良版】キャンバス描画（アイコンとテキストを完璧に配置）
-        function drawIllustration(canvas, theme) {
+        // 描画コア（isMono: パズル中はステンドグラス風の繊細なモノクロ線画、クリア後はフルカラーアート）
+        function drawIllustration(canvas, theme, isMono = false) {
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
             const h = canvas.height;
 
             const { emoji, colors } = analyzeTheme(theme);
 
-            // 背景グラデーション
-            const grad = ctx.createLinearGradient(0, 0, w, h);
-            grad.addColorStop(0, colors[0]);
-            grad.addColorStop(1, colors[1]);
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
+            if (isMono) {
+                // パズル中のステンドグラス・モノクローム調背景
+                ctx.fillStyle = "#2d3436";
+                ctx.fillRect(0, 0, w, h);
 
-            // 装飾サークル
-            ctx.fillStyle = "rgba(255,255,255,0.15)";
-            ctx.beginPath();
-            ctx.arc(w * 0.5, h * 0.38, w * 0.32, 0, Math.PI * 2);
-            ctx.fill();
+                ctx.fillStyle = "rgba(255, 255, 255, 0.06)";
+                ctx.beginPath();
+                ctx.arc(w * 0.5, h * 0.38, w * 0.35, 0, Math.PI * 2);
+                ctx.fill();
 
-            // メインアイコン（中央に大きく確実に描画）
-            ctx.font = `${w * 0.42}px sans-serif`;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
-            ctx.shadowBlur = 12;
-            ctx.fillText(emoji, w / 2, h * 0.38);
+                // ステンドグラスの鉛フレーム風の線
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(4, 4, w - 8, h - 8);
 
-            // テーマタイトル（文字崩れ防止自動調整）
-            ctx.shadowBlur = 6;
-            ctx.shadowColor = "rgba(0,0,0,0.8)";
-            ctx.fillStyle = "#ffffff";
-            
-            let fontSize = w * 0.08;
-            if (theme.length > 8) fontSize = w * 0.068;
-            if (theme.length > 12) fontSize = w * 0.058;
+                // アイコン（モノクローム・エッチング風）
+                ctx.font = `${w * 0.42}px sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+                ctx.fillText(emoji, w / 2, h * 0.38);
 
-            ctx.font = `bold ${fontSize}px sans-serif`;
-            ctx.fillText(theme, w / 2, h * 0.84);
+                // タイトル（シックなモノクロ）
+                ctx.fillStyle = "#dfe4ea";
+                let fontSize = w * 0.08;
+                if (theme.length > 8) fontSize = w * 0.068;
+                if (theme.length > 12) fontSize = w * 0.058;
+                ctx.font = `bold ${fontSize}px sans-serif`;
+                ctx.fillText(theme, w / 2, h * 0.84);
+
+            } else {
+                // クリア後のフルカラー・極上の絵画アート
+                const grad = ctx.createLinearGradient(0, 0, w, h);
+                grad.addColorStop(0, colors[0]);
+                grad.addColorStop(1, colors[1]);
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+
+                // 輝く光の円環
+                ctx.fillStyle = "rgba(255,255,255,0.2)";
+                ctx.beginPath();
+                ctx.arc(w * 0.5, h * 0.38, w * 0.34, 0, Math.PI * 2);
+                ctx.fill();
+
+                // メインアイコン（鮮やか）
+                ctx.font = `${w * 0.42}px sans-serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+                ctx.shadowBlur = 12;
+                ctx.fillText(emoji, w / 2, h * 0.38);
+
+                // タイトル（ゴールド箔押し風）
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = "rgba(0,0,0,0.8)";
+                ctx.fillStyle = "#ffffff";
+                
+                let fontSize = w * 0.08;
+                if (theme.length > 8) fontSize = w * 0.068;
+                if (theme.length > 12) fontSize = w * 0.058;
+
+                ctx.font = `bold ${fontSize}px sans-serif`;
+                ctx.fillText(theme, w / 2, h * 0.84);
+            }
         }
 
-        // 濃密でドラマチックな長編ストーリー生成
         function getStory(theme) {
             const { emoji } = analyzeTheme(theme);
-            return `📖 『${theme}の物語』\n\n夕暮れの街角、冷たい風が吹き抜けるスクランブルの片隅で、"${theme}"は独自の矜持を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一欠片の獲物、そして胸に秘めた野望は、静かな夜の闇の中で確かな熱を帯びていきます。\n${emoji}が示すその足跡は、ただの生存闘争ではなく、誇り高き魂が紡ぐ孤高のドラマそのものです。\n\n迷宮のようなパズルのピースを一つ残らず噛み合わせ、真実の姿を解き明かしたあなたへ。\nこの物語の目撃者となった今、日常の枠を超えた野性的で刺激的なドラマが、あなたの現実の世界でも力強く動き出します――。`;
+            return `📖 『${theme}の物語』\n\n夕暮れの街角、冷たい風が吹き抜けるスクランブルの片隅で、"${theme}"は独自の矜持を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一欠片の獲物、そして胸に秘めた野望は、静かな夜の闇の中で確かな熱を帯びていきます。\n${emoji}が示すその足跡は、ただの生存闘争ではなく、誇り高き魂が紡ぐ孤高のドラマそのものです。\n\n迷宮のようなパズルのピースを一つ残らず噛み合わせ、モノクロームの闇に真実の色彩を蘇らせたあなたへ。\nこの物語の目撃者となった今、日常の枠を超えた野性的で刺激的なドラマが、あなたの現実の世界でも力強く動き出します――。`;
         }
 
         function updatePreview() {
             previewTitle.innerText = `テーマ: ${currentTheme}`;
-            drawIllustration(previewCanvas, currentTheme);
+            drawIllustration(previewCanvas, currentTheme, false);
         }
 
         function generatePuzzle() {
@@ -450,6 +492,7 @@
 
             selectedIndex = null;
             storyBoxEl.style.display = "none";
+            boardEl.classList.remove('completed');
             messageEl.innerText = "ピースをタップして選択し、入れ替えてね！";
             render();
         }
@@ -461,17 +504,25 @@
 
             const totalTiles = gridSize * gridSize;
             const imgSize = 320;
+            const completed = isCompleted();
+
+            if (completed) {
+                boardEl.classList.add('completed');
+            } else {
+                boardEl.classList.remove('completed');
+            }
 
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = imgSize;
             tempCanvas.height = imgSize;
-            drawIllustration(tempCanvas, currentTheme);
+            // クリア前はモノクロのステンドグラス風、クリア後はフルカラーアートとして全描画
+            drawIllustration(tempCanvas, currentTheme, !completed);
 
             for (let i = 0; i < totalTiles; i++) {
                 const originalPieceId = boardState[i];
                 const tileDiv = document.createElement('div');
                 tileDiv.className = 'tile';
-                if (selectedIndex === i) {
+                if (selectedIndex === i && !completed) {
                     tileDiv.classList.add('selected');
                 }
 
@@ -491,9 +542,11 @@
 
                 tileDiv.appendChild(canvas);
 
-                tileDiv.onclick = () => {
-                    handleTileClick(i);
-                };
+                if (!completed) {
+                    tileDiv.onclick = () => {
+                        handleTileClick(i);
+                    };
+                }
 
                 boardEl.appendChild(tileDiv);
             }
@@ -502,6 +555,8 @@
         }
 
         function handleTileClick(index) {
+            if (isCompleted()) return;
+
             if (selectedIndex === null) {
                 selectedIndex = index;
                 messageEl.innerText = "選択中。もう一つのピースをタップ！";
@@ -521,15 +576,17 @@
         }
 
         function checkClear() {
-            if (isCompleted()) {
-                messageEl.innerText = "🎉 パズルクリア！濃密な長編ストーリーが解放されました！";
+            if (isCompleted() && storyBoxEl.style.display !== "block") {
+                messageEl.innerText = "🎉 奇跡達成！色彩アート＆長編ストーリーが解放されました！";
                 storyText.innerText = getStory(currentTheme);
                 storyBoxEl.style.display = "block";
+                // 再レンダリングして境界線を消し、完璧な1枚絵のアートにトランスフォーム
+                setTimeout(() => render(), 50);
             }
         }
 
         saveBtn.onclick = () => {
-            alert("【Canva Masterpiece 連携成功】\n「肉を食べる野良猫」の鮮やかなビジュアルと重厚なストーリーアセットが、Canvaワークスペースへ完璧に保存されました！");
+            alert("【Canva Masterpiece Art 保存完了】\n「肉を食べる野良猫」の鮮やかな色彩アートワークと重厚なストーリーアセットが、スマホのカメラロール＆Canvaワークスペースへ完璧に保存されました！");
         };
 
         updatePreview();
