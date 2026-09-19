@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TalePuzzle - スピード＆スケッチ・パズル</title>
+    <style>
+        :root {
+            --primary-color: #ffb7b2;
+            --accent-color: #ff9aa2;
+            --bg-color: #fceade;
+            --text-color: #5c5552;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            touch-action: manipulation;
+        }
+        header {
+            text-align: center;
+            padding: 15px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #d87093;
+            letter-spacing: 1px;
+        }
+        p.subtitle {
+            margin: 5px 0 0 0;
+            font-size: 0.85rem;
+            color: #887;
+        }
+        #game-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255,154,162,0.4);
+            font-weight: bold;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        #message {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #e06d79;
+            height: 1.5rem;
+            text-align: center;
+            padding: 0 10px;
+        }
+        #tray {
+            width: 320px;
+            background: #fff5ee;
+            border-radius: 12px;
+            padding: 10px;
+            box-sizing: border-box;
+            min-height: 100px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .instructions {
+            font-size: 0.75rem;
+            color: #998;
+            text-align: center;
+            max-width: 320px;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📖 TalePuzzle</h1>
+        <p class="subtitle">スピード＆スケッチ モード</p>
+    </header>
+
+    <div id="game-container">
+        <canvas id="puzzleCanvas" width="320" height="320"></canvas>
+    </div>
+
+    <div id="message">「シャッフル開始」を押してね！</div>
+
+    <div class="controls">
+        <button id="shuffleBtn">シャッフル開始</button>
+        <button id="resetBtn">リセット</button>
+    </div>
+
+    <div id="tray"></div>
+
+    <div class="instructions">
+        💡 <b>遊び方</b>: トレイのピースをタップして選択（回転はダブルタップ）。上のボードの置きたいマスをタップしてはめよう！
+    </div>
+
+    <script>
+        const canvas = document.getElementById('puzzleCanvas');
+        const ctx = canvas.getContext('2d');
+        const messageEl = document.getElementById('message');
+        const trayEl = document.getElementById('tray');
+
+        const GRID = 3;
+        const SIZE = 320;
+        const PIECE_SIZE = SIZE / GRID;
+
+        let imgColor = new Image();
+        let imgMono = new Image();
+        let pieces = [];
+        let trayPieces = [];
+        let selectedTrayPiece = null;
+        let isStarted = false;
+
+        function generateSampleImages() {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = SIZE;
+            tempCanvas.height = SIZE;
+            const tCtx = tempCanvas.getContext('2d');
+
+            let grad = tCtx.createLinearGradient(0, 0, 0, SIZE);
+            grad.addColorStop(0, '#a1c4fd');
+            grad.addColorStop(1, '#c2e9fb');
+            tCtx.fillStyle = grad;
+            tCtx.fillRect(0, 0, SIZE, SIZE);
+
+            tCtx.strokeStyle = '#ff9aa2'; tCtx.lineWidth = 8;
+            tCtx.beginPath(); tCtx.arc(SIZE/2, SIZE, 140, Math.PI, 0, false); tCtx.stroke();
+            
+            tCtx.fillStyle = '#8b5a2b';
+            tCtx.fillRect(SIZE/2 - 20, SIZE - 160, 40, 160);
+            tCtx.fillStyle = '#77dd77';
+            tCtx.beginPath(); tCtx.arc(SIZE/2, SIZE - 160, 80, 0, Math.PI * 2); tCtx.fill();
+
+            tCtx.fillStyle = '#ff6961';
+            tCtx.fillRect(SIZE/2 - 40, SIZE - 80, 80, 80);
+
+            imgColor.src = tempCanvas.toDataURL();
+
+            imgColor.onload = () => {
+                const monoCanvas = document.createElement('canvas');
+                monoCanvas.width = SIZE;
+                monoCanvas.height = SIZE;
+                const mCtx = monoCanvas.getContext('2d');
+                mCtx.filter = 'grayscale(100%) contrast(120%)';
+                mCtx.drawImage(imgColor, 0, 0);
+                imgMono.src = monoCanvas.toDataURL();
+                
+                imgMono.onload = () => {
+                    initGame();
+                };
+            };
+        }
+
+        function initGame() {
+            pieces = [];
+            for (let r = 0; r < GRID; r++) {
+                for (let c = 0; c < GRID; c++) {
+                    pieces.push({
+                        id: r * GRID + c,
+                        correctRow: r,
+                        correctCol: c,
+                        rotation: 0,
+                        isPlaced: true
+                    });
+                }
+            }
+            isStarted = false;
+            selectedTrayPiece = null;
+            messageEl.textContent = "「シャッフル開始」を押してね！";
+            drawBoard();
+            trayEl.innerHTML = '';
+        }
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, SIZE, SIZE);
+            ctx.drawImage(imgMono, 0, 0, SIZE, SIZE);
+
+            pieces.forEach(p => {
+                if (p.isPlaced) {
+                    const x = p.correctCol * PIECE_SIZE;
+                    const y = p.correctRow * PIECE_SIZE;
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(x, y, PIECE_SIZE, PIECE_SIZE);
+                    ctx.clip();
+                    ctx.drawImage(imgColor, 0, 0, SIZE, SIZE);
+                    ctx.restore();
+                }
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(p.correctCol * PIECE_SIZE, p.correctRow * PIECE_SIZE, PIECE_SIZE, PIECE_SIZE);
+            });
+        }
+
+        function shuffle() {
+            isStarted = true;
+            selectedTrayPiece = null;
+            messageEl.textContent = "ピースを選んで、ボードの場所をタップ！";
+            
+            pieces.forEach(p => {
+                p.isPlaced = false;
+                p.rotation = Math.floor(Math.random() * 4) * 90;
+            });
+            trayPieces = [...pieces].sort(() => Math.random() - 0.5);
+            renderTray();
+            drawBoard();
+        }
+
+        function renderTray() {
+            trayEl.innerHTML = '';
+            trayPieces.forEach((p) => {
+                if (!p.isPlaced) {
+                    const pieceCanvas = document.createElement('canvas');
+                    pieceCanvas.width = 70;
+                    pieceCanvas.height = 70;
+                    pieceCanvas.style.width = '70px';
+                    pieceCanvas.style.height = '70px';
+                    pieceCanvas.style.borderRadius = '8px';
+                    pieceCanvas.style.cursor = 'pointer';
+                    pieceCanvas.style.border = (selectedTrayPiece === p) ? '3px solid #d87093' : '2px solid #ff9aa2';
+                    pieceCanvas.style.backgroundColor = '#fff';
+                    pieceCanvas.style.transform = `rotate(${p.rotation}deg)`;
+
+                    const pCtx = pieceCanvas.getContext('2d');
+                    pCtx.drawImage(
+                        imgMono,
+                        p.correctCol * PIECE_SIZE, p.correctRow * PIECE_SIZE, PIECE_SIZE, PIECE_SIZE,
+                        0, 0, 70, 70
+                    );
+
+                    // タップで選択、もう一度タップで回転
+                    pieceCanvas.addEventListener('click', () => {
+                        if (selectedTrayPiece === p) {
+                            p.rotation = (p.rotation + 90) % 360;
+                            messageEl.textContent = "ピースを回転しました（向きを調整）";
+                        } else {
+                            selectedTrayPiece = p;
+                            messageEl.textContent = "ピース選択中！ボードのマスをタップしてね";
+                        }
+                        renderTray();
+                    });
+
+                    trayEl.appendChild(pieceCanvas);
+                }
+            });
+        }
+
+        canvas.addEventListener('click', (e) => {
+            if (!isStarted) return;
+            if (!selectedTrayPiece) {
+                messageEl.textContent = "先に下のトレイからピースを選んでね！";
+                return;
+            }
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const clickedCol = Math.floor(x / PIECE_SIZE);
+            const clickedRow = Math.floor(y / PIECE_SIZE);
+
+            // 正しい場所かつ回転が0度かチェック
+            if (selectedTrayPiece.correctRow === clickedRow && selectedTrayPiece.correctCol === clickedCol && selectedTrayPiece.rotation === 0) {
+                selectedTrayPiece.isPlaced = true;
+                selectedTrayPiece = null;
+                messageEl.textContent = "ナイス！色が鮮やかに蘇った！✨";
+                drawBoard();
+                renderTray();
+                checkWin();
+            } else {
+                messageEl.textContent = "ここじゃないか、向き（回転）が違うよ！（再タップで回転）";
+            }
+        });
+
+        function checkWin() {
+            if (pieces.every(p => p.isPlaced)) {
+                messageEl.textContent = "🎉 クリアおめでとう！絵本が完成しました！";
+            }
+        }
+
+        document.getElementById('shuffleBtn').addEventListener('click', shuffle);
+        document.getElementById('resetBtn').addEventListener('click', initGame);
+
+        generateSampleImages();
+    </script>
+</body>
+</html>
