@@ -187,7 +187,7 @@
             width: 100%;
             aspect-ratio: 1 / 1;
             display: grid;
-            gap: 5px; /* 本物の鉛線（ケーム）の太さ・重厚感を演出 */
+            gap: 5px;
             background: #0b0e11; 
             padding: 5px;
             border-radius: 16px;
@@ -289,7 +289,7 @@
         <div class="card">
             <label for="themeInput">✨ 幾何学ステンドグラス・パズル生成</label>
             <div class="input-group">
-                <input type="text" id="themeInput" value="肉を食べる野良猫" placeholder="例: 肉を食べる野良猫、深海の孤城...">
+                <input type="text" id="themeInput" value="窓の外を見つめる犬" placeholder="例: 窓の外を見つめる犬、深海の孤城...">
                 <button class="btn" id="generateBtn">生成</button>
             </div>
             
@@ -306,7 +306,7 @@
                 <canvas id="previewCanvas" width="160" height="160"></canvas>
             </div>
             <div class="preview-info">
-                <strong id="previewTitle">テーマ: 肉を食べる野良猫</strong>
+                <strong id="previewTitle">テーマ: 窓の外を見つめる犬</strong>
                 <span>解くと光が透過し、至高のステンドグラスアートに！</span>
             </div>
         </div>
@@ -326,7 +326,7 @@
         let gridSize = 2;
         let boardState = [];
         let selectedIndex = null;
-        let currentTheme = "肉を食べる野良猫";
+        let currentTheme = "窓の外を見つめる犬";
 
         const themeInput = document.getElementById('themeInput');
         const generateBtn = document.getElementById('generateBtn');
@@ -348,24 +348,31 @@
             };
         });
 
-        function analyzeTheme(theme) {
-            let hash = 0;
-            for (let i = 0; i < theme.length; i++) {
-                hash = theme.charCodeAt(i) + ((hash << 5) - hash);
-            }
+        function getThemeAsset(theme) {
+            let colors = ['#d35400', '#e67e22', '#c0392b'];
+            let symbol = "🐶";
 
-            let colors = ['#c0392b', '#d35400', '#e67e22'];
-            if (theme.match(/猫|ねこ|ネコ|野良|子猫/)) {
-                colors = ['#c0392b', '#d35400', '#f39c12'];
+            if (theme.match(/犬|いぬ|パピー|ワンコ|ポチ/)) {
+                symbol = theme.match(/窓|外|見つめ|遠吠え/) ? "🐕" : "🐶";
+                colors = ['#d35400', '#e67e22', '#f39c12'];
+            } else if (theme.match(/猫|ねこ|ネコ|野良|子猫/)) {
+                symbol = theme.match(/肉|食|ハンター/) ? "🥩" : "🐱";
+                colors = ['#c0392b', '#d35400', '#e74c3c'];
             } else if (theme.match(/鬼|魔王|悪魔|ホラー|ダーク/)) {
+                symbol = "👹";
                 colors = ['#2c3e50', '#8e44ad', '#c0392b'];
             } else if (theme.match(/海|水|深海|魚|青/)) {
+                symbol = "🌊";
                 colors = ['#2980b9', '#1abc9c', '#3498db'];
             } else if (theme.match(/空|雲|星|宇宙|月|夜/)) {
+                symbol = "🌙";
                 colors = ['#8e44ad', '#2c3e50', '#2980b9'];
             } else if (theme.match(/森|木|葉|自然/)) {
+                symbol = "🌲";
                 colors = ['#27ae60', '#16a085', '#2c3e50'];
             } else {
+                let hash = 0;
+                for (let i = 0; i < theme.length; i++) hash = theme.charCodeAt(i) + ((hash << 5) - hash);
                 const palettes = [
                     ['#d35400', '#f39c12', '#c0392b'],
                     ['#2980b9', '#8e44ad', '#3498db'],
@@ -373,8 +380,10 @@
                     ['#c0392b', '#8e44ad', '#d35400']
                 ];
                 colors = palettes[Math.abs(hash) % palettes.length];
+                const symbols = ["✨", "🔥", "💎", "⚡", "🗝️", "🛡️", "🔮", "🗡️", "👑", "🌟"];
+                symbol = symbols[Math.abs(hash >> 3) % symbols.length];
             }
-            return colors;
+            return { symbol, colors };
         }
 
         // 幾何学ステンドグラス・モザイク生成エンジン
@@ -382,7 +391,7 @@
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
             const h = canvas.height;
-            const colors = analyzeTheme(theme);
+            const { symbol, colors } = getThemeAsset(theme);
 
             // 背景ベース（未完成時は重厚なダークナイト、完成時は教会に差し込む光のクリアカラー）
             if (!isCompleted) {
@@ -397,7 +406,6 @@
                 ctx.fillRect(0, 0, w, h);
             }
 
-            // 幾何学的ステンドグラスのポリゴン（モザイク片）を生成
             const cols = 6;
             const rows = 6;
             const cellW = w / cols;
@@ -411,22 +419,7 @@
                 return x - Math.floor(x);
             }
 
-            // モザイクピースの描画
-            let count = 0;
-            for (let r = 0; r <= rows; r++) {
-                for (let c = 0; c <= cols; c++) {
-                    count++;
-                    let px = c * cellW + (pseudoRandom(count) - 0.5) * (cellW * 0.6);
-                    let py = r * cellH + (pseudoRandom(count + 50) - 0.5) * (cellH * 0.6);
-                    if (c === 0) px = 0; if (c === cols) px = w;
-                    if (r === 0) py = 0; if (r === rows) py = h;
-                    
-                    // 頂点を保存しておく簡易処理の代わりにVoronoi風のパーティションを構築
-                }
-            }
-
             // 幾何学的なステンドグラス・ケーム（鉛の網目フレーム）とガラス片の塗り分け
-            const steps = 5;
             for (let y = 0; y < rows; y++) {
                 for (let x = 0; x < cols; x++) {
                     let tileColorIdx = (x + y * 3 + seed) % colors.length;
@@ -436,28 +429,23 @@
                     let cx = (x + 0.5) * cellW + (pseudoRandom(x * 10 + y) - 0.5) * cellW * 0.4;
                     let cy = (y + 0.5) * cellH + (pseudoRandom(y * 10 + x + 100) - 0.5) * cellH * 0.4;
                     
-                    // 多角形（ステンドグラスのガラスピース）のパス作成
                     ctx.moveTo(x * cellW, y * cellH);
                     ctx.lineTo((x + 1) * cellW, y * cellH);
                     ctx.lineTo(cx, cy);
                     ctx.closePath();
 
                     if (!isCompleted) {
-                        // 未完成時は神秘的なモノクローム・エッチング調ステンドグラス
                         ctx.fillStyle = (x + y) % 2 === 0 ? "rgba(45, 52, 54, 0.85)" : "rgba(30, 39, 46, 0.9)";
                         ctx.fill();
-                        // ガラス内部の微かな光の反射
                         ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
                         ctx.lineWidth = 1.5;
                         ctx.stroke();
                     } else {
-                        // 完成時は光が透過する極上のステンドグラスカラー
                         ctx.fillStyle = baseCol;
                         ctx.globalAlpha = 0.82;
                         ctx.fill();
                         ctx.globalAlpha = 1.0;
 
-                        // 差し込む光のハイライト
                         const highlight = ctx.createRadialGradient(cx, cy, 2, cx, cy, cellW);
                         highlight.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
                         highlight.addColorStop(1, 'transparent');
@@ -467,14 +455,6 @@
                 }
             }
 
-            // 中央のシンボル（ステンドグラスの中心に輝くモチーフ）
-            const symbols = ["🐱", "🐾", "✨", "💎", "🔥", "🌊", "🌙", "🌲", "👑", "🗡️"];
-            let symbolIdx = seed % symbols.length;
-            if (theme.match(/猫|ねこ|ネコ|野良/)) symbolIdx = 0;
-            if (theme.match(/海|水|深海/)) symbolIdx = 5;
-            if (theme.match(/空|夜|星/)) symbolIdx = 6;
-            const mainSymbol = symbols[symbolIdx];
-
             // シンボル周囲のステンドグラス装飾円環
             ctx.strokeStyle = isCompleted ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0.25)";
             ctx.lineWidth = 4;
@@ -482,13 +462,13 @@
             ctx.arc(w * 0.5, h * 0.38, w * 0.28, 0, Math.PI * 2);
             ctx.stroke();
 
-            // メインアイコン描画
+            // メインアイコン描画（テーマに一致したもの）
             ctx.font = `${w * 0.38}px sans-serif`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.shadowColor = isCompleted ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.9)";
             ctx.shadowBlur = isCompleted ? 15 : 5;
-            ctx.fillText(mainSymbol, w / 2, h * 0.38);
+            ctx.fillText(symbol, w / 2, h * 0.38);
             ctx.shadowBlur = 0;
 
             // ステンドグラス下部のタイトルプレート（鉛の枠付き）
@@ -508,7 +488,6 @@
             ctx.font = `bold ${fontSize}px sans-serif`;
             ctx.fillText(theme, w / 2, h * 0.82);
 
-            // 重厚な黒い鉛線（ケーム）の格子オーバーレイ（パズル中をよりステンドグラスらしくする）
             if (!isCompleted) {
                 ctx.strokeStyle = "#050709";
                 ctx.lineWidth = 3;
@@ -517,7 +496,8 @@
         }
 
         function getStory(theme) {
-            return `📖 『${theme}の物語』\n\n教会の薔薇窓を模した幾何学的なステンドグラスの向こう側、夕暮れの淡い光に包まれたスクランブルの片隅で、"${theme}"は独自の矜持を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一欠片の獲物、そして胸に秘めた野望は、ガラスの向こうの夜の闇の中で確かな熱を帯びていきます。\n\n幾何学的なステンドグラスのピースを一つ残らず噛み合わせ、モノクロームの枠組みに真実の光を灯したあなたへ。\nこの物語の目撃者となった今、日常の枠を超えた野性的で刺激的なドラマが、あなたの現実の世界でも力強く動き出します――。`;
+            const { symbol } = getThemeAsset(theme);
+            return `📖 『${theme}の物語』\n\n教会の薔薇窓を模した幾何学的なステンドグラスの向こう側、夕暮れの淡い光に包まれた窓辺で、"${theme}"は独自の矜持を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一欠片の温もり、そして胸に秘めた切なさは、ガラスの向こうの夜の闇の中で確かな熱を帯びていきます。\n\n幾何学的なステンドグラスのピースを一つ残らず噛み合わせ、モノクロームの枠組みに真実の光を灯したあなたへ。\nこの物語の目撃者となった今、日常の枠を超えたドラマが、あなたの現実の世界でも力強く動き出します――。`;
         }
 
         function updatePreview() {
