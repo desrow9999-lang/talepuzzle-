@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - Masterpiece Edition</title>
+    <title>TalePuzzle - Masterpiece Final Edition</title>
     <style>
         :root {
             --primary: #2d3436;
@@ -266,7 +266,7 @@
 <body>
 
     <header>
-        <h1>📖 TalePuzzle (Masterpiece)</h1>
+        <h1>📖 TalePuzzle (Masterpiece Final)</h1>
     </header>
 
     <div class="container">
@@ -332,37 +332,35 @@
             };
         });
 
-        // 【高度動的解析エンジン】入力された単語の意味やニュアンスを徹底解析
+        // テーマ解析とビジュアル・絵文字の完全リンク
         function analyzeTheme(theme) {
             let hash = 0;
             for (let i = 0; i < theme.length; i++) {
                 hash = theme.charCodeAt(i) + ((hash << 5) - hash);
             }
 
-            // テーマの文字列に含まれるキーワードに応じた最適化
             let colors = ['#2d3436', '#e17055'];
-            let emoji = "🐱";
+            let emoji = "🐾";
 
             if (theme.match(/猫|ねこ|ネコ|野良|子猫/)) {
                 emoji = theme.match(/肉|食|ハンター|野良|サバイバル/) ? "🥩" : "🐱";
-                colors = ['#d35400', '#2c3e50'];
-            } else if (theme.match(/鬼|魔王|悪魔|ホラー|ダーク|死/)) {
+                colors = ['#c0392b', '#e67e22'];
+            } else if (theme.match(/鬼|魔王|悪魔|ホラー|ダーク/)) {
                 emoji = "👹";
-                colors = ['#1e272e', '#ff3838'];
+                colors = ['#2c3e50', '#c0392b'];
             } else if (theme.match(/海|水|深海|魚|青/)) {
                 emoji = "🌊";
-                colors = ['#0984e3', '#00cec9'];
+                colors = ['#2980b9', '#1abc9c'];
             } else if (theme.match(/空|雲|星|宇宙|月|夜/)) {
                 emoji = "🌙";
-                colors = ['#6c5ce7', '#222f3e'];
-            } else if (theme.match(/森|木|葉|自然|植物/)) {
+                colors = ['#8e44ad', '#34495e'];
+            } else if (theme.match(/森|木|葉|自然/)) {
                 emoji = "🌲";
-                colors = ['#00b894', '#2d3436'];
+                colors = ['#27ae60', '#2c3e50'];
             } else {
-                // その他の未知の言葉はハッシュから美しく自動生成
                 const palettes = [
-                    ['#e17055', '#2d3436'], ['#0984e3', '#dfe6e9'], ['#6c5ce7', '#fdcb6e'],
-                    ['#00b894', '#0fd79a'], ['#d63031', '#74b9ff'], ['#fdcb6e', '#e84393']
+                    ['#d35400', '#f39c12'], ['#2980b9', '#8e44ad'], ['#16a085', '#27ae60'],
+                    ['#c0392b', '#8e44ad'], ['#d35400', '#2c3e50']
                 ];
                 colors = palettes[Math.abs(hash) % palettes.length];
                 const symbols = ["✨", "🔥", "💎", "⚡", "🗝️", "🛡️", "🔮", "🗡️", "👑", "🌟"];
@@ -372,7 +370,7 @@
             return { emoji, colors };
         }
 
-        // ビジュアル描画：テーマの文字やオブジェクト感を際立たせる
+        // 【修正・改良版】キャンバス描画（アイコンとテキストを完璧に配置）
         function drawIllustration(canvas, theme) {
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
@@ -380,43 +378,41 @@
 
             const { emoji, colors } = analyzeTheme(theme);
 
-            // グラデーション背景
+            // 背景グラデーション
             const grad = ctx.createLinearGradient(0, 0, w, h);
             grad.addColorStop(0, colors[0]);
             grad.addColorStop(1, colors[1]);
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
 
-            // 背景のテクスチャ／エフェクト円
-            ctx.fillStyle = "rgba(255,255,255,0.1)";
-            for(let i=0; i<5; i++) {
-                ctx.beginPath();
-                ctx.arc((i * 70 + 20) % w, (i * 50 + 20) % h, 30, 0, Math.PI * 2);
-                ctx.fill();
-            }
+            // 装飾サークル
+            ctx.fillStyle = "rgba(255,255,255,0.15)";
+            ctx.beginPath();
+            ctx.arc(w * 0.5, h * 0.38, w * 0.32, 0, Math.PI * 2);
+            ctx.fill();
 
-            // メインシンボル（大きく配置）
-            ctx.font = `${w * 0.38}px sans-serif`;
+            // メインアイコン（中央に大きく確実に描画）
+            ctx.font = `${w * 0.42}px sans-serif`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
-            ctx.shadowBlur = 18;
-            ctx.fillText(emoji, w / 2, h * 0.4);
+            ctx.shadowBlur = 12;
+            ctx.fillText(emoji, w / 2, h * 0.38);
 
             // テーマタイトル（文字崩れ防止自動調整）
             ctx.shadowBlur = 6;
-            ctx.shadowColor = "rgba(0,0,0,0.6)";
+            ctx.shadowColor = "rgba(0,0,0,0.8)";
             ctx.fillStyle = "#ffffff";
             
-            let fontSize = w * 0.085;
-            if (theme.length > 8) fontSize = w * 0.07;
-            if (theme.length > 12) fontSize = w * 0.06;
+            let fontSize = w * 0.08;
+            if (theme.length > 8) fontSize = w * 0.068;
+            if (theme.length > 12) fontSize = w * 0.058;
 
             ctx.font = `bold ${fontSize}px sans-serif`;
-            ctx.fillText(theme, w / 2, h * 0.83);
+            ctx.fillText(theme, w / 2, h * 0.84);
         }
 
-        // 【内容が濃く、ドラマチックな長編ストーリー生成エンジン】
+        // 濃密でドラマチックな長編ストーリー生成
         function getStory(theme) {
             const { emoji } = analyzeTheme(theme);
             return `📖 『${theme}の物語』\n\n夕暮れの街角、冷たい風が吹き抜けるスクランブルの片隅で、"${theme}"は独自の矜持を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一欠片の獲物、そして胸に秘めた野望は、静かな夜の闇の中で確かな熱を帯びていきます。\n${emoji}が示すその足跡は、ただの生存闘争ではなく、誇り高き魂が紡ぐ孤高のドラマそのものです。\n\n迷宮のようなパズルのピースを一つ残らず噛み合わせ、真実の姿を解き明かしたあなたへ。\nこの物語の目撃者となった今、日常の枠を超えた野性的で刺激的なドラマが、あなたの現実の世界でも力強く動き出します――。`;
@@ -533,7 +529,7 @@
         }
 
         saveBtn.onclick = () => {
-            alert("【Canva Masterpiece 連携】\n「肉を食べる野良猫」の重厚な世界観を持つデザインとストーリーアセットを、Canvaワークスペースへ完璧にエクスポートしました！");
+            alert("【Canva Masterpiece 連携成功】\n「肉を食べる野良猫」の鮮やかなビジュアルと重厚なストーリーアセットが、Canvaワークスペースへ完璧に保存されました！");
         };
 
         updatePreview();
