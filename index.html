@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - かんたん絵本パズル</title>
+    <title>TalePuzzle - オーダーメイド絵本</title>
     <style>
         :root {
             --primary: #ff6b81;
@@ -51,7 +51,57 @@
             padding-bottom: 30px;
         }
 
-        /* 完成見本エリア */
+        /* テーマ入力エリア */
+        .generator-card {
+            width: 100%;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .generator-card label {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .generator-card input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #dfe4ea;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .generator-card input:focus {
+            border-color: var(--primary);
+        }
+
+        .generate-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* 完成見本ヒント */
         .preview-container {
             display: flex;
             align-items: center;
@@ -65,17 +115,14 @@
         }
 
         .preview-box {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 8px;
-            background-image: radial-gradient(circle at 50% 30%, #ff9ff3, #54a0ff, #2e86de);
-            background-size: 200% 200%;
-            position: relative;
+            background: linear-gradient(135deg, #ff9ff3, #54a0ff);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
         }
 
         .preview-text {
@@ -86,7 +133,7 @@
         .preview-text strong {
             display: block;
             color: var(--primary);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .message {
@@ -96,7 +143,7 @@
             height: 1.2em;
         }
 
-        /* 2x2 イラストジグソーボード */
+        /* 2x2 パズルボード */
         .puzzle-board {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -128,8 +175,7 @@
         .piece {
             width: 100%;
             height: 100%;
-            background-image: radial-gradient(circle at 50% 30%, #ff9ff3, #54a0ff, #2e86de);
-            background-size: 200% 200%;
+            background: linear-gradient(135deg, #ff9ff3, #54a0ff);
             position: absolute;
             top: 0;
             left: 0;
@@ -168,12 +214,6 @@
             box-sizing: border-box;
             text-align: center;
             display: none;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .story-box h2 {
@@ -200,27 +240,31 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(255, 107, 129, 0.4);
-            transition: transform 0.1s;
-        }
-
-        .save-btn:active {
-            transform: scale(0.95);
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>📖 TalePuzzle - 本日の絵本</h1>
+        <h1>📖 TalePuzzle - オーダーメイド</h1>
     </header>
 
     <div class="container">
+        <!-- テーマ入力カード -->
+        <div class="generator-card">
+            <label for="themeInput">✨ 好きなテーマを入力して絵本を作る</label>
+            <div class="input-group">
+                <input type="text" id="themeInput" value="宇宙の猫" placeholder="例: 森のくま、魔法の国...">
+                <button class="generate-btn" id="generateBtn">生成する</button>
+            </div>
+        </div>
+
         <!-- 完成見本ヒント -->
         <div class="preview-container">
-            <div class="preview-box">🐳</div>
+            <div class="preview-box" id="previewIcon">🐱</div>
             <div class="preview-text">
-                <strong>完成めやす（この絵を目指そう！）</strong>
-                <span>ピースをタップして入れ替えよう</span>
+                <strong id="previewTitle">テーマ: 宇宙の猫</strong>
+                <span>ピースをタップして絵を完成させよう</span>
             </div>
         </div>
 
@@ -231,33 +275,74 @@
 
         <!-- クリア後に出現するストーリー＆保存ボックス -->
         <div class="story-box" id="storyBox">
-            <h2>✨ 絵本が完成しました！</h2>
-            <p>「星降る夜、小さなクジラは仲間たちと銀河の海原へ漕ぎ出しました。あなたの手で紡がれた物語が、温かな光で包まれますように。」</p>
+            <h2>✨ オリジナル絵本が完成しました！</h2>
+            <p id="storyText">「星の海を渡る宇宙猫は、きらめく流星を追いかけて新しい冒険の扉を開きました。」</p>
             <button class="save-btn" id="saveBtn">💾 この絵本をスマホに保存する</button>
         </div>
     </div>
 
     <script>
-        const totalPieces = 4; // 2x2の4分割に戻してサクサクに
+        const totalPieces = 4;
         let boardState = []; 
         let selectedIndex = null;
 
+        const themeInput = document.getElementById('themeInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const previewIcon = document.getElementById('previewIcon');
+        const previewTitle = document.getElementById('previewTitle');
         const boardEl = document.getElementById('board');
         const messageEl = document.getElementById('message');
         const storyBoxEl = document.getElementById('storyBox');
+        const storyText = document.getElementById('storyText');
         const saveBtn = document.getElementById('saveBtn');
 
-        const pieceData = [
-            { x: '0%', y: '0%', icon: '🐳', num: '1' },
-            { x: '100%', y: '0%', icon: '🌙', num: '2' },
-            { x: '0%', y: '100%', icon: '⭐', num: '3' },
-            { x: '100%', y: '100%', icon: '🌊', num: '4' }
-        ];
+        // テーマに応じたダミー生成データ（AI連携のベース）
+        let currentThemeData = {
+            title: "宇宙の猫",
+            icon: "🐱",
+            story: "「星の海を渡る宇宙猫は、きらめく流星を追いかけて新しい冒険の扉を開きました。」",
+            pieces: [
+                { icon: '🐱', num: '1' },
+                { icon: '🚀', num: '2' },
+                { icon: '🌌', num: '3' },
+                { icon: '⭐', num: '4' }
+            ]
+        };
+
+        function generateNewPuzzle() {
+            const val = themeInput.value.trim();
+            if(!val) return;
+
+            // 入力されたテーマに合わせて動的に内容を変更（AI生成のシミュレーション）
+            currentThemeData.title = val;
+            
+            // 簡単なキーワード判定でアイコンやストーリーを変える演出
+            if(val.includes("森") || val.includes("くま")) {
+                currentThemeData.icon = "🐻";
+                currentThemeData.story = `「${val}の物語：静かな森の奥深く、木漏れ日のなかで小さな出会いが訪れました。」`;
+                currentThemeData.pieces = [{icon:'🐻',num:'1'}, {icon:'🌲',num:'2'}, {icon:'🍯',num:'3'}, {icon:'🍃',num:'4'}];
+            } else if(val.includes("魔法") || val.includes("国")) {
+                currentThemeData.icon = "🪄";
+                currentThemeData.story = `「${val}の物語：空に浮かぶお城から、虹色の魔法の粉がふわりと街へ降り注ぎました。」`;
+                currentThemeData.pieces = [{icon:'🪄',num:'1'}, {icon:'🏰',num:'2'}, {icon:'🌈',num:'3'}, {icon:'✨',num:'4'}];
+            } else {
+                currentThemeData.icon = "✨";
+                currentThemeData.story = `「${val}の物語：あなただけの特別なテーマが、今日という日に新しい彩りを与えてくれます。」`;
+                currentThemeData.pieces = [{icon:'✨',num:'1'}, {icon:'📘',num:'2'}, {icon:'🌟',num:'3'}, {icon:'💫',num:'4'}];
+            }
+
+            previewIcon.innerText = currentThemeData.icon;
+            previewTitle.innerText = `テーマ: ${currentThemeData.title}`;
+            storyText.innerText = currentThemeData.story;
+
+            initGame();
+        }
+
+        generateBtn.onclick = generateNewPuzzle;
 
         function initGame() {
             boardState = Array.from({length: totalPieces}, (_, i) => i);
             
-            // ランダムにシャッフル
             for (let i = 0; i < 10; i++) {
                 const idx1 = Math.floor(Math.random() * totalPieces);
                 const idx2 = Math.floor(Math.random() * totalPieces);
@@ -271,6 +356,7 @@
 
             selectedIndex = null;
             storyBoxEl.style.display = "none";
+            messageEl.innerText = "ピースをタップして入れ替えてね！";
             render();
         }
 
@@ -285,8 +371,7 @@
                 const pieceDiv = document.createElement('div');
                 pieceDiv.className = 'piece';
                 
-                const data = pieceData[originalPieceId];
-                pieceDiv.style.backgroundPosition = `${data.x} ${data.y}`;
+                const data = currentThemeData.pieces[originalPieceId];
                 pieceDiv.innerHTML = `<span>${data.icon}</span><span class="num">${data.num}</span>`;
 
                 if (selectedIndex === i) {
@@ -325,13 +410,13 @@
 
         function checkClear() {
             if (isCompleted()) {
-                messageEl.innerText = "🎉 パズルクリア！素敵な絵本が完成しました！";
+                messageEl.innerText = "🎉 クリア！オリジナル絵本が完成しました！";
                 storyBoxEl.style.display = "block";
             }
         }
 
         saveBtn.onclick = () => {
-            alert("【保存成功】\n本日の絵本イラストとストーリーがスマホの写真フォルダーに保存されました！");
+            alert("【保存成功】\nオーダーメイド絵本がスマホの写真フォルダーに保存されました！");
         };
 
         initGame();
