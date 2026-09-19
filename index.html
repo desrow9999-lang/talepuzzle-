@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - Stained Glass & Color Art Edition</title>
+    <title>TalePuzzle - Stained Glass Masterpiece Edition</title>
     <style>
         :root {
-            --primary: #2d3436;
+            --primary: #1e272e;
             --accent: #e17055;
             --bg-color: #f7f1e3;
             --card-bg: #ffffff;
@@ -187,34 +187,38 @@
             width: 100%;
             aspect-ratio: 1 / 1;
             display: grid;
-            gap: 3px;
-            background: #2d3436;
+            gap: 4px;
+            background: #111417; /* 重厚なステンドグラスのフレーム色 */
             padding: 4px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
             box-sizing: border-box;
             overflow: hidden;
             position: relative;
+            border: 4px solid #2d3436;
         }
 
         .puzzle-board.completed {
             border: 4px solid #ffeaa7;
-            box-shadow: 0 0 25px rgba(255, 234, 167, 0.8);
+            box-shadow: 0 0 30px rgba(255, 234, 167, 0.9);
             gap: 0;
             padding: 0;
+            background: transparent;
         }
 
         .tile {
-            background: #ffffff;
+            background: #1e272e;
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            border-radius: 6px;
-            transition: transform 0.1s, box-shadow 0.2s;
+            border-radius: 4px;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+            transition: transform 0.1s;
         }
 
         .puzzle-board.completed .tile {
             border-radius: 0;
+            box-shadow: none;
         }
 
         .tile:active {
@@ -230,7 +234,7 @@
 
         .tile.selected {
             border: 2px solid #ffeaa7;
-            box-shadow: 0 0 15px rgba(255, 234, 167, 0.9);
+            box-shadow: 0 0 15px rgba(255, 234, 167, 0.9), inset 0 0 8px rgba(0,0,0,0.6);
             z-index: 10;
         }
 
@@ -278,12 +282,12 @@
 <body>
 
     <header>
-        <h1>📖 TalePuzzle (Stained Glass Art)</h1>
+        <h1>📖 TalePuzzle (Stained Glass)</h1>
     </header>
 
     <div class="container">
         <div class="card">
-            <label for="themeInput">✨ モノクロパズルから極上の色彩アートへ</label>
+            <label for="themeInput">✨ ステンドグラス・パズルを生成</label>
             <div class="input-group">
                 <input type="text" id="themeInput" value="肉を食べる野良猫" placeholder="例: 肉を食べる野良猫、深海の孤城...">
                 <button class="btn" id="generateBtn">生成</button>
@@ -303,7 +307,7 @@
             </div>
             <div class="preview-info">
                 <strong id="previewTitle">テーマ: 肉を食べる野良猫</strong>
-                <span>解くと色彩が満ち、1枚の美しい絵画アートに昇華！</span>
+                <span>解くと光が透過し、至高のステンドグラスアートに！</span>
             </div>
         </div>
 
@@ -312,9 +316,9 @@
         <div class="puzzle-board" id="board"></div>
 
         <div class="card story-box" id="storyBox">
-            <h2>✨ 奇跡の色彩アート＆長編ストーリー解放！</h2>
+            <h2>✨ ステンドグラスアート＆長編ストーリー解放！</h2>
             <p id="storyText">ここに物語が表示されます。</p>
-            <button class="btn export-btn" id="saveBtn">🖼️ この美しい絵画アートを保存・シェアする</button>
+            <button class="btn export-btn" id="saveBtn">🖼️ このステンドグラスアートを保存・シェアする</button>
         </div>
     </div>
 
@@ -350,12 +354,12 @@
                 hash = theme.charCodeAt(i) + ((hash << 5) - hash);
             }
 
-            let colors = ['#2d3436', '#e17055'];
+            let colors = ['#c0392b', '#d35400'];
             let emoji = "🐾";
 
             if (theme.match(/猫|ねこ|ネコ|野良|子猫/)) {
                 emoji = theme.match(/肉|食|ハンター|野良|サバイバル/) ? "🥩" : "🐱";
-                colors = ['#c0392b', '#e67e22'];
+                colors = ['#c0392b', '#d35400'];
             } else if (theme.match(/鬼|魔王|悪魔|ホラー|ダーク/)) {
                 emoji = "👹";
                 colors = ['#2c3e50', '#c0392b'];
@@ -364,10 +368,10 @@
                 colors = ['#2980b9', '#1abc9c'];
             } else if (theme.match(/空|雲|星|宇宙|月|夜/)) {
                 emoji = "🌙";
-                colors = ['#8e44ad', '#34495e'];
+                colors = ['#8e44ad', '#2c3e50'];
             } else if (theme.match(/森|木|葉|自然/)) {
                 emoji = "🌲";
-                colors = ['#27ae60', '#2c3e50'];
+                colors = ['#27ae60', '#16a085'];
             } else {
                 const palettes = [
                     ['#d35400', '#f39c12'], ['#2980b9', '#8e44ad'], ['#16a085', '#27ae60'],
@@ -381,7 +385,7 @@
             return { emoji, colors };
         }
 
-        // 描画コア（isMono: パズル中はステンドグラス風の繊細なモノクロ線画、クリア後はフルカラーアート）
+        // ステンドグラス描画コア（isMono: パズル中は深みのあるガラス＆鉛フレーム構造、クリア後は光の透過する極上の色彩アート）
         function drawIllustration(canvas, theme, isMono = false) {
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
@@ -390,29 +394,40 @@
             const { emoji, colors } = analyzeTheme(theme);
 
             if (isMono) {
-                // パズル中のステンドグラス・モノクローム調背景
-                ctx.fillStyle = "#2d3436";
+                // パズル中：重厚なステンドグラスのガラス片（深みのあるグラデーション ＋ ガラスの光沢）
+                const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+                bgGrad.addColorStop(0, '#1e272e');
+                bgGrad.addColorStop(1, '#111417');
+                ctx.fillStyle = bgGrad;
                 ctx.fillRect(0, 0, w, h);
 
-                ctx.fillStyle = "rgba(255, 255, 255, 0.06)";
-                ctx.beginPath();
-                ctx.arc(w * 0.5, h * 0.38, w * 0.35, 0, Math.PI * 2);
-                ctx.fill();
+                // ガラス内部の微かな色気（うっすらとテーマカラーを透けさせる）
+                const glassGrad = ctx.createRadialGradient(w * 0.5, h * 0.38, 10, w * 0.5, h * 0.38, w * 0.5);
+                glassGrad.addColorStop(0, colors[0]);
+                glassGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = glassGrad;
+                ctx.globalAlpha = 0.35;
+                ctx.fillRect(0, 0, w, h);
+                ctx.globalAlpha = 1.0;
 
-                // ステンドグラスの鉛フレーム風の線
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+                // ステンドグラス特有の鉛のインナーフレーム（幾何学的なカット線）
+                ctx.strokeStyle = "rgba(0, 0, 0, 0.6)";
+                ctx.lineWidth = 4;
+                ctx.strokeRect(6, 6, w - 12, h - 12);
+
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
                 ctx.lineWidth = 2;
-                ctx.strokeRect(4, 4, w - 8, h - 8);
+                ctx.strokeRect(8, 8, w - 16, h - 16);
 
-                // アイコン（モノクローム・エッチング風）
+                // アイコン（エッチング風シルバー）
                 ctx.font = `${w * 0.42}px sans-serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
                 ctx.fillText(emoji, w / 2, h * 0.38);
 
-                // タイトル（シックなモノクロ）
-                ctx.fillStyle = "#dfe4ea";
+                // タイトル
+                ctx.fillStyle = "#b2bec3";
                 let fontSize = w * 0.08;
                 if (theme.length > 8) fontSize = w * 0.068;
                 if (theme.length > 12) fontSize = w * 0.058;
@@ -420,25 +435,26 @@
                 ctx.fillText(theme, w / 2, h * 0.84);
 
             } else {
-                // クリア後のフルカラー・極上の絵画アート
+                // クリア後：バックライトが透過する極上のステンドグラス・フルカラーアート
                 const grad = ctx.createLinearGradient(0, 0, w, h);
                 grad.addColorStop(0, colors[0]);
                 grad.addColorStop(1, colors[1]);
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, w, h);
 
-                // 輝く光の円環
-                ctx.fillStyle = "rgba(255,255,255,0.2)";
-                ctx.beginPath();
-                ctx.arc(w * 0.5, h * 0.38, w * 0.34, 0, Math.PI * 2);
-                ctx.fill();
+                // 窓から差し込む神々しい光の反射（ハイライト）
+                const highlight = ctx.createRadialGradient(w * 0.3, h * 0.2, 5, w * 0.3, h * 0.2, w * 0.7);
+                highlight.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
+                highlight.addColorStop(1, 'transparent');
+                ctx.fillStyle = highlight;
+                ctx.fillRect(0, 0, w, h);
 
-                // メインアイコン（鮮やか）
+                // メインアイコン
                 ctx.font = `${w * 0.42}px sans-serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
-                ctx.shadowBlur = 12;
+                ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                ctx.shadowBlur = 15;
                 ctx.fillText(emoji, w / 2, h * 0.38);
 
                 // タイトル（ゴールド箔押し風）
@@ -457,7 +473,7 @@
 
         function getStory(theme) {
             const { emoji } = analyzeTheme(theme);
-            return `📖 『${theme}の物語』\n\n夕暮れの街角、冷たい風が吹き抜けるスクランブルの片隅で、"${theme}"は独自の矜持を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一欠片の獲物、そして胸に秘めた野望は、静かな夜の闇の中で確かな熱を帯びていきます。\n${emoji}が示すその足跡は、ただの生存闘争ではなく、誇り高き魂が紡ぐ孤高のドラマそのものです。\n\n迷宮のようなパズルのピースを一つ残らず噛み合わせ、モノクロームの闇に真実の色彩を蘇らせたあなたへ。\nこの物語の目撃者となった今、日常の枠を超えた野性的で刺激的なドラマが、あなたの現実の世界でも力強く動き出します――。`;
+            return `📖 『${theme}の物語』\n\n教会の薔薇窓を模したステンドグラスの向こう側、夕暮れの淡い光に包まれたスクランブルの片隅で、"${theme}"は独自の矜持を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一欠片の獲物、そして胸に秘めた野望は、ガラスの向こうの夜の闇の中で確かな熱を帯びていきます。\n${emoji}が示すその足跡は、ただの生存闘争ではなく、誇り高き魂が紡ぐ孤高のドラマそのものです。\n\n迷宮のようなステンドグラスのピースを一つ残らず噛み合わせ、モノクロームの枠組みに真実の光を灯したあなたへ。\nこの物語の目撃者となった今、日常の枠を超えた野性的で刺激的なドラマが、あなたの現実の世界でも力強く動き出します――。`;
         }
 
         function updatePreview() {
@@ -515,7 +531,6 @@
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = imgSize;
             tempCanvas.height = imgSize;
-            // クリア前はモノクロのステンドグラス風、クリア後はフルカラーアートとして全描画
             drawIllustration(tempCanvas, currentTheme, !completed);
 
             for (let i = 0; i < totalTiles; i++) {
@@ -577,16 +592,15 @@
 
         function checkClear() {
             if (isCompleted() && storyBoxEl.style.display !== "block") {
-                messageEl.innerText = "🎉 奇跡達成！色彩アート＆長編ストーリーが解放されました！";
+                messageEl.innerText = "🎉 奇跡達成！ステンドグラスアート＆長編ストーリーが解放されました！";
                 storyText.innerText = getStory(currentTheme);
                 storyBoxEl.style.display = "block";
-                // 再レンダリングして境界線を消し、完璧な1枚絵のアートにトランスフォーム
                 setTimeout(() => render(), 50);
             }
         }
 
         saveBtn.onclick = () => {
-            alert("【Canva Masterpiece Art 保存完了】\n「肉を食べる野良猫」の鮮やかな色彩アートワークと重厚なストーリーアセットが、スマホのカメラロール＆Canvaワークスペースへ完璧に保存されました！");
+            alert("【Stained Glass Masterpiece 保存完了】\n「肉を食べる野良猫」の光り輝くステンドグラスアートワークと重厚なストーリーアセットが、スマホのカメラロール＆Canvaワークスペースへ完璧に保存されました！");
         };
 
         updatePreview();
