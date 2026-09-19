@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - 今日の一冊</title>
+    <title>TalePuzzle - 本格ジグソー＆保存</title>
     <style>
         :root {
             --primary: #ff6b81;
-            --secondary: #ff4757;
             --bg-color: #fff9f5;
             --card-bg: #ffffff;
             --text-color: #2f3542;
@@ -28,39 +27,47 @@
 
         header {
             width: 100%;
-            padding: 15px 0;
+            padding: 12px 0;
             text-align: center;
             background: var(--card-bg);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         h1 {
             margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--primary);
             letter-spacing: 1px;
         }
 
         .container {
-            width: 90%;
+            width: 92%;
             max-width: 400px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
+            padding-bottom: 30px;
         }
 
-        /* パズルボード */
+        .message {
+            font-size: 0.85rem;
+            color: #747d8c;
+            text-align: center;
+            height: 1.2em;
+        }
+
+        /* 3x3 パズルボード */
         .puzzle-board {
             width: 100%;
             aspect-ratio: 1 / 1;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 4px;
             background: #f1f2f6;
-            padding: 10px;
+            padding: 8px;
             border-radius: 16px;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
             box-sizing: border-box;
@@ -68,13 +75,14 @@
 
         .slot {
             background: #dfe4ea;
-            border-radius: 12px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
             border: 2px dashed #ced6e0;
+            cursor: pointer;
         }
 
         .slot.correct {
@@ -87,58 +95,39 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(135deg, #a29bfe, #6c5ce7);
-            border-radius: 10px;
+            border-radius: 6px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 1.5rem;
-            cursor: pointer;
+            font-size: 1.2rem;
             user-select: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s, background 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.15s;
+        }
+
+        .piece span.num {
+            font-size: 0.7rem;
+            opacity: 0.8;
         }
 
         .piece:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
         }
 
         .piece.selected {
             border: 3px solid #fffa65;
             transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255,250,101,0.8);
         }
 
-        /* 待機トレイ */
-        .tray {
-            width: 100%;
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-around;
-            gap: 10px;
-            box-sizing: border-box;
-            min-height: 90px;
-            align-items: center;
-        }
-
-        .tray-slot {
-            width: 70px;
-            height: 70px;
-            background: #f1f2f6;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* ストーリー表示エリア */
+        /* ストーリー＆保存エリア */
         .story-box {
             width: 100%;
             background: var(--card-bg);
-            padding: 20px;
+            padding: 15px;
             border-radius: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             box-sizing: border-box;
@@ -147,205 +136,161 @@
         }
 
         .story-box h2 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--primary);
             margin-top: 0;
+            margin-bottom: 8px;
         }
 
         .story-box p {
-            font-size: 0.95rem;
-            line-height: 1.6;
+            font-size: 0.85rem;
+            line-height: 1.5;
             color: #57606f;
-            margin-bottom: 0;
+            margin-bottom: 12px;
         }
 
-        .message {
+        .save-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
             font-size: 0.9rem;
-            color: #747d8c;
-            height: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 107, 129, 0.4);
+            transition: transform 0.1s;
         }
 
-        /* パチンとハマったときのエフェクト */
-        @keyframes snapEffect {
-            0% { transform: scale(1.2); filter: brightness(1.5); }
-            100% { transform: scale(1); filter: brightness(1); }
-        }
-        .snap {
-            animation: snapEffect 0.3s ease-out;
+        .save-btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>📖 TalePuzzle - 本日の一冊</h1>
+        <h1>📖 TalePuzzle - 本日のジグソー</h1>
     </header>
 
     <div class="container">
-        <div class="message" id="message">トレイのピースをタップして、ボードにはめよう！</div>
+        <div class="message" id="message">ピースをタップして選択し、別のマスをタップして入れ替えよう！</div>
 
-        <!-- 2x2 パズルボード -->
-        <div class="puzzle-board" id="board">
-            <div class="slot" data-index="0"></div>
-            <div class="slot" data-index="1"></div>
-            <div class="slot" data-index="2"></div>
-            <div class="slot" data-index="3"></div>
-        </div>
+        <!-- 3x3 パズルボード -->
+        <div class="puzzle-board" id="board"></div>
 
-        <!-- 下部トレイ（ピース置き場） -->
-        <div class="tray" id="tray">
-            <div class="tray-slot" data-tray="0"></div>
-            <div class="tray-slot" data-tray="1"></div>
-            <div class="tray-slot" data-tray="2"></div>
-            <div class="tray-slot" data-tray="3"></div>
-        </div>
-
-        <!-- クリア後に出現するストーリー -->
+        <!-- クリア後に出現するストーリー＆保存ボックス -->
         <div class="story-box" id="storyBox">
-            <h2>✨ 本日の物語が完成しました！</h2>
-            <p>「むかしむかし、星の降る夜に、小さなクジラは空へ旅立ちました。今日という日も、あなたにとって素晴らしい物語の1ページになりますように。」</p>
+            <h2>✨ 本日の絵本が完成しました！</h2>
+            <p>「星降る夜、小さなクジラは仲間たちと銀河の海原へ漕ぎ出しました。あなたの手で紡がれた物語が、温かな光で包まれますように。」</p>
+            <button class="save-btn" id="saveBtn">💾 この絵本をスマホに保存する</button>
         </div>
     </div>
 
     <script>
-        // 4分割のピースデータ（本来はAIが自動生成する絵の断片）
-        const piecesData = [
-            { id: 0, text: "🐳", label: "頭" },
-            { id: 1, text: "🌙", label: "月" },
-            { id: 2, text: "🌊", label: "海" },
-            { id: 3, text: "⭐", label: "星" }
-        ];
-
-        let boardState = [null, null, null, null]; // ボードの状態
-        let trayState = [0, 1, 2, 3]; // トレイにあるピースのID
-        let selectedPiece = null; // 選択中のピース情報 {from: 'tray'/'board', index: id}
+        // 3x3 (9ピース) のデータ定義
+        // index 0~8 が正しい位置
+        const totalPieces = 9;
+        let boardState = []; // 現在のボード上のピースID配置
+        let selectedIndex =現在選択中のボード上のインデックス = null;
 
         const boardEl = document.getElementById('board');
-        const trayEl = document.getElementById('tray');
         const messageEl = document.getElementById('message');
         const storyBoxEl = document.getElementById('storyBox');
+        const saveBtn = document.getElementById('saveBtn');
 
-        function render() {
-            // ボードの描画
-            const slots = boardEl.children;
-            for (let i = 0; i < 4; i++) {
-                slots[i].innerHTML = '';
-                slots[i].classList.remove('correct');
-                const pieceId = boardState[i];
-                if (pieceId !== null) {
-                    const pieceDiv = createPieceElement(pieceId);
-                    if (pieceId === i) {
-                        slots[i].classList.add('correct');
-                    }
-                    slots[i].appendChild(pieceDiv);
-                }
+        // 絵文字やシンボルのバリエーション（3x3のパーツ風）
+        const pieceIcons = ["🐳", "🌙", "🌊", "⭐", "☁️", "🐟", "✨", "📘", "🌟"];
+
+        function initGame() {
+            // シャッフルされた状態を作る（解ける状態にするため、綺麗に並べ替えたあとにランダムスワップ）
+            boardState = Array.from({length: totalPieces}, (_, i) => i);
+            
+            // 簡単なシャッフル（実際にはランダムに入れ替えを何度か行う）
+            for (let i = 0; i < 15; i++) {
+                const idx1 = Math.floor(Math.random() * totalPieces);
+                const idx2 = Math.floor(Math.random() * totalPieces);
+                [boardState[idx1], boardState[idx2]] = [boardState[idx2], boardState[idx1]];
             }
 
-            // トレイの描画
-            const traySlots = trayEl.children;
-            for (let i = 0; i < 4; i++) {
-                traySlots[i].innerHTML = '';
-                const pieceId = trayState[i];
-                if (pieceId !== null) {
-                    const pieceDiv = createPieceElement(pieceId);
-                    traySlots[i].appendChild(pieceDiv);
+            // もし最初から揃っていたらもう一度シャッフル
+            if (isCompleted()) {
+                initGame();
+                return;
+            }
+
+            selectedIndex = null;
+            storyBoxEl.style.display = "none";
+            render();
+        }
+
+        function render() {
+            boardEl.innerHTML = '';
+            
+            for (let i = 0; i < totalPieces; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'slot';
+                
+                const pieceId = boardState[i];
+                if (pieceId === i) {
+                    slot.classList.add('correct');
                 }
+
+                const pieceDiv = document.createElement('div');
+                pieceDiv.className = 'piece';
+                if (selectedIndex === i) {
+                    pieceDiv.classList.add('selected');
+                }
+
+                pieceDiv.innerHTML = `<span>${pieceIcons[pieceId]}</span><span class="num">${pieceId + 1}</span>`;
+
+                // タップ時の処理（ピース同士を入れ替えるスワップ形式）
+                slot.onclick = () => {
+                    handleSlotClick(i);
+                };
+
+                slot.appendChild(pieceDiv);
+                boardEl.appendChild(slot);
             }
 
             checkClear();
         }
 
-        function createPieceElement(id) {
-            const data = piecesData[id];
-            const div = document.createElement('div');
-            div.className = 'piece';
-            div.innerText = data.text;
-            
-            // 選択状態のハイライト
-            if (selectedPiece && selectedPiece.id === id) {
-                div.classList.add('selected');
-            }
-
-            div.onclick = (e) => {
-                e.stopPropagation();
-                handlePieceClick(id);
-            };
-            return div;
-        }
-
-        function handlePieceClick(id) {
-            if (selectedPiece && selectedPiece.id === id) {
-                // 選択解除
-                selectedPiece = null;
-                messageEl.innerText = "ピースの選択を解除しました";
+        function handleSlotClick(index) {
+            if (selectedIndex === null) {
+                // 1つ目のピースを選択
+                selectedIndex = index;
+                messageEl.innerText = `${pieceIcons[boardState[index]]} を選択中。入れ替えるマスをタップしてね！`;
             } else {
-                // ピース選択
-                selectedPiece = { id: id };
-                messageEl.innerText = `${piecesData[id].label}のピースを選択中！置きたい場所をタップしてね`;
+                // 2つ目のピースをタップしたので、場所をスワップ（入れ替え）
+                const temp = boardState[selectedIndex];
+                boardState[selectedIndex] = boardState[index];
+                boardState[index] = temp;
+
+                selectedIndex = null;
+                messageEl.innerText = "パチッと入れ替えました！";
             }
             render();
         }
 
-        // ボードのマスをクリックしたとき
-        for (let i = 0; i < 4; i++) {
-            boardEl.children[i].onclick = () => {
-                if (selectedPiece === null) {
-                    messageEl.innerText = "まずは下のトレイからピースをタップして選んでね！";
-                    return;
-                }
-
-                const pieceId = selectedPiece.id;
-
-                // ピースがすでに他の場所にあればそこから外す
-                boardState = boardState.map(p => p === pieceId ? null : p);
-                trayState = trayState.map(p => p === pieceId ? null : p);
-
-                // 新しいボードの場所に置く（もし元々そこにあったピースはトレイの空きへ）
-                const oldPieceOnBoard = boardState[i];
-                boardState[i] = pieceId;
-
-                if (oldPieceOnBoard !== null) {
-                    const emptyTrayIndex = trayState.indexOf(null);
-                    if (emptyTrayIndex !== -1) {
-                        trayState[emptyTrayIndex] = oldPieceOnBoard;
-                    }
-                }
-
-                // 選択をリセットしてエフェクト
-                selectedPiece = null;
-                messageEl.innerText = pieceId === i ? "✨ ピタッとハマった！気持ちいい！" : "配置しました！";
-                
-                render();
-            };
-        }
-
-        // トレイの空きスペースをクリックして戻すことも可能に
-        for (let i = 0; i < 4; i++) {
-            trayEl.children[i].onclick = () => {
-                if (selectedPiece === null) return;
-                const pieceId = selectedPiece.id;
-
-                boardState = boardState.map(p => p === pieceId ? null : p);
-                trayState = trayState.map(p => p === pieceId ? null : p);
-                trayState[i] = pieceId;
-
-                selectedPiece = null;
-                messageEl.innerText = "トレイに戻しました";
-                render();
-            };
+        function isCompleted() {
+            return boardState.every((val, idx) => val === idx);
         }
 
         function checkClear() {
-            const isCompleted = boardState.every((val, idx) => val === idx);
-            if (isCompleted) {
-                messageEl.innerText = "🎉 クリア！おめでとうございます！";
+            if (isCompleted()) {
+                messageEl.innerText = "🎉 パズルクリア！素晴らしい完成度です！";
                 storyBoxEl.style.display = "block";
             }
         }
 
-        // 初期描画
-        render();
+        // 保存ボタンのシミュレーション
+        saveBtn.onclick = () => {
+            alert("【保存シミュレーション】\n今日の絵本イラストとストーリーがスマホの写真フォルダーに保存されました！");
+        };
+
+        // ゲーム初期化実行
+        initGame();
     </script>
 </body>
 </html>
-、
