@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - スライド絵本パズル</title>
+    <title>TalePuzzle - 1枚絵パズル</title>
     <style>
         :root {
             --primary: #ff6b81;
@@ -101,7 +101,7 @@
             white-space: nowrap;
         }
 
-        /* 完見本（大きな全体図プレビュー）エリア */
+        /* 完成見本（全体図プレビュー） */
         .preview-section {
             width: 100%;
             background: var(--card-bg);
@@ -154,16 +154,16 @@
             height: 1.2em;
         }
 
-        /* 2x2 スライドパズルボード */
+        /* 2x2 スワップパズルボード（全ピースが絵で埋まる形） */
         .puzzle-board {
             width: 100%;
             aspect-ratio: 1 / 1;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
-            gap: 4px;
+            gap: 6px;
             background: #2f3542;
-            padding: 4px;
+            padding: 6px;
             border-radius: 16px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             box-sizing: border-box;
@@ -180,7 +180,7 @@
         }
 
         .tile:active {
-            transform: scale(0.97);
+            transform: scale(0.96);
         }
 
         .tile canvas {
@@ -190,13 +190,11 @@
             pointer-events: none;
         }
 
-        /* 空白マス（スライド用） */
-        .tile.empty {
-            background: #dcdde1;
-            cursor: default;
-        }
-        .tile.empty canvas {
-            display: none;
+        /* 選択中のハイライト */
+        .tile.selected {
+            border: 3px solid #fffa65;
+            box-shadow: 0 0 12px rgba(255,250,101,0.9);
+            z-index: 10;
         }
 
         /* クリア後のストーリー＆保存エリア */
@@ -247,7 +245,7 @@
 <body>
 
     <header>
-        <h1>📖 TalePuzzle - スライド絵本</h1>
+        <h1>📖 TalePuzzle - 絵本パズル</h1>
     </header>
 
     <div class="container">
@@ -267,13 +265,13 @@
             </div>
             <div class="preview-info">
                 <strong id="previewTitle">テーマ: 優しい人</strong>
-                <span>この全体図を目指して、隣の空白をタップしてピースをスライドさせよう！</span>
+                <span>ピースをタップして選択し、入れ替えて元の1枚絵に戻そう！</span>
             </div>
         </div>
 
-        <div class="message" id="message">隣接するピースをタップして動かしてね！</div>
+        <div class="message" id="message">ピースをタップして選択し、入れ替えてね！</div>
 
-        <!-- 2x2 スライドパズルボード (3枚の絵ピース + 1つの空白) -->
+        <!-- 2x2 スワップパズルボード -->
         <div class="puzzle-board" id="board"></div>
 
         <!-- クリア後に出現するストーリー＆保存ボックス -->
@@ -287,7 +285,8 @@
     <script>
         const size = 2; // 2x2
         const totalTiles = size * size; // 4
-        let boardState = [0, 1, 2, 3]; // 3が空白(空きマス)
+        let boardState = [0, 1, 2, 3]; 
+        let selectedIndex = null;
         let currentTheme = "優しい人";
         let currentStory = "「優しい人の温かな笑顔が、まわりの人々の心をそっと包み込みました。」";
 
@@ -302,7 +301,7 @@
         const saveBtn = document.getElementById('saveBtn');
 
         // キャンバスに綺麗な絵本イラストを描画する関数
-        function drawIllustration(canvas, theme, highlightId = -1) {
+        function drawIllustration(canvas, theme) {
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
             const h = canvas.height;
@@ -322,21 +321,20 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
 
-            // 描き込むモチーフ
+            // モチーフの配置
             ctx.fillStyle = "white";
             ctx.font = "bold 32px sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
-            // 全体の中にアイコンや星を描く
             ctx.fillText("🌟", w * 0.25, h * 0.25);
             ctx.fillText("📖", w * 0.75, h * 0.25);
             ctx.fillText("🌸", w * 0.25, h * 0.75);
             ctx.fillText("💖", w * 0.75, h * 0.75);
 
-            // テーマの文字をうっすら入れる
-            ctx.fillStyle = "rgba(255,255,255,0.85)";
-            ctx.font = "bold 16px sans-serif";
+            // テーマ名
+            ctx.fillStyle = "rgba(255,255,255,0.9)";
+            ctx.font = "bold 15px sans-serif";
             ctx.fillText(theme, w / 2, h / 2);
         }
 
@@ -362,37 +360,24 @@
 
         // ゲーム初期化（シャッフル）
         function initGame() {
-            // スライドパズルとして解ける状態にするため、正しい状態からランダムに数回スライドさせる
-            boardState = [0, 1, 2, 3]; // 3が空き
+            boardState = [0, 1, 2, 3];
+            // ランダムにシャッフル
             for (let i = 0; i < 10; i++) {
-                const emptyIdx = boardState.indexOf(3);
-                const neighbors = getNeighbors(emptyIdx);
-                const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
-                // 入れ替え
-                [boardState[emptyIdx], boardState[randomNeighbor]] = [boardState[randomNeighbor], boardState[emptyIdx]];
+                const idx1 = Math.floor(Math.random() * totalTiles);
+                const idx2 = Math.floor(Math.random() * totalTiles);
+                [boardState[idx1], boardState[idx2]] = [boardState[idx2], boardState[idx1]];
             }
 
-            // もし最初から揃っていたらもう一度
+            // 最初から揃っていたらやり直し
             if (isCompleted()) {
                 initGame();
                 return;
             }
 
+            selectedIndex = null;
             storyBoxEl.style.display = "none";
-            messageEl.innerText = "空白の隣のピースをタップしてスライド！";
+            messageEl.innerText = "ピースをタップして選択し、入れ替えてね！";
             render();
-        }
-
-        // 隣接するタイインデックスを取得
-        function getNeighbors(idx) {
-            const row = Math.floor(idx / size);
-            const col = idx % size;
-            const neighbors = [];
-            if (row > 0) neighbors.push(idx - size); // 上
-            if (row < size - 1) neighbors.push(idx + size); // 下
-            if (col > 0) neighbors.push(idx - 1); // 左
-            if (col < size - 1) neighbors.push(idx + 1); // 右
-            return neighbors;
         }
 
         // 描画
@@ -400,51 +385,47 @@
             boardEl.innerHTML = '';
 
             for (let i = 0; i < totalTiles; i++) {
-                const tileValue = boardState[i];
+                const originalPieceId = boardState[i];
                 const tileDiv = document.createElement('div');
                 tileDiv.className = 'tile';
-
-                if (tileValue === 3) {
-                    // 空白マス
-                    tileDiv.classList.add('empty');
-                } else {
-                    // 絵のピース（全体画像の一部を切り出す）
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 150;
-                    canvas.height = 150;
-                    const ctx = canvas.getContext('2d');
-
-                    // 本来のタイル位置（正解の形）に基づく切り出し元座標
-                    const origRow = Math.floor(tileValue / size);
-                    const origCol = tileValue % size;
-                    
-                    const srcX = origCol * (300 / size);
-                    const srcY = origRow * (300 / size);
-                    const srcSize = 300 / size;
-
-                    // 一度大きめの隠しキャンバスで全体を描いてからピースごとに切り出す
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = 300;
-                    tempCanvas.height = 300;
-                    drawIllustration(tempCanvas, currentTheme);
-
-                    ctx.drawImage(tempCanvas, srcX, srcY, srcSize, srcSize, 0, 0, 150, 150);
-
-                    // ピースに番号を小さく添える
-                    ctx.fillStyle = "rgba(0,0,0,0.5)";
-                    ctx.fillRect(4, 4, 24, 24);
-                    ctx.fillStyle = "white";
-                    ctx.font = "bold 14px sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.fillText(tileValue + 1, 16, 16);
-
-                    tileDiv.appendChild(canvas);
-
-                    tileDiv.onclick = () => {
-                        handleTileClick(i);
-                    };
+                if (selectedIndex === i) {
+                    tileDiv.classList.add('selected');
                 }
+
+                // 絵のピース（全体画像の一部を切り出す）
+                const canvas = document.createElement('canvas');
+                canvas.width = 150;
+                canvas.height = 150;
+                const ctx = canvas.getContext('2d');
+
+                const origRow = Math.floor(originalPieceId / size);
+                const origCol = originalPieceId % size;
+                
+                const srcX = origCol * (300 / size);
+                const srcY = origRow * (300 / size);
+                const srcSize = 300 / size;
+
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 300;
+                tempCanvas.height = 300;
+                drawIllustration(tempCanvas, currentTheme);
+
+                ctx.drawImage(tempCanvas, srcX, srcY, srcSize, srcSize, 0, 0, 150, 150);
+
+                // ピース番号
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(4, 4, 24, 24);
+                ctx.fillStyle = "white";
+                ctx.font = "bold 14px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(originalPieceId + 1, 16, 16);
+
+                tileDiv.appendChild(canvas);
+
+                tileDiv.onclick = () => {
+                    handleTileClick(i);
+                };
 
                 boardEl.appendChild(tileDiv);
             }
@@ -452,18 +433,21 @@
             checkClear();
         }
 
-        // タイルクリック時（空白の隣ならスライド）
+        // タップして入れ替える（スワップ式）
         function handleTileClick(index) {
-            const emptyIdx = boardState.indexOf(3);
-            const neighbors = getNeighbors(emptyIdx);
-
-            if (neighbors.includes(index)) {
-                // 空白と入れ替え
-                [boardState[emptyIdx], boardState[index]] = [boardState[index], boardState[emptyIdx]];
-                render();
+            if (selectedIndex === null) {
+                selectedIndex = index;
+                messageEl.innerText = "ピース選択中。入れ替えるもう一つのピースをタップ！";
             } else {
-               messageEl.innerText = "そのピースは動かせません（空白の隣をタップ）";
+                // 入れ替え実行
+                const temp = boardState[selectedIndex];
+                boardState[selectedIndex] = boardState[index];
+                boardState[index] = temp;
+
+                selectedIndex = null;
+                messageEl.innerText = "ピースを入れ替えました！";
             }
+            render();
         }
 
         function isCompleted() {
@@ -478,7 +462,7 @@
         }
 
         saveBtn.onclick = () => {
-            alert("【保存成功】\n完成したスライド絵本がスマホの写真フォルダーに保存されました！");
+            alert("【保存成功】\n完成した絵本イラストがスマホの写真フォルダーに保存されました！");
         };
 
         // 初期化実行
