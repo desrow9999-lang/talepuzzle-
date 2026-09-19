@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - オーダーメイド絵本</title>
+    <title>TalePuzzle - スライド絵本パズル</title>
     <style>
         :root {
             --primary: #ff6b81;
@@ -46,7 +46,7 @@
             max-width: 400px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
             padding-bottom: 30px;
         }
@@ -55,17 +55,17 @@
         .generator-card {
             width: 100%;
             background: var(--card-bg);
-            padding: 15px;
+            padding: 12px 15px;
             border-radius: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .generator-card label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--primary);
             font-weight: bold;
         }
@@ -77,10 +77,10 @@
 
         .generator-card input {
             flex: 1;
-            padding: 10px;
+            padding: 8px 10px;
             border: 2px solid #dfe4ea;
             border-radius: 10px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             outline: none;
             transition: border-color 0.2s;
         }
@@ -101,107 +101,102 @@
             white-space: nowrap;
         }
 
-        /* 完成見本ヒント */
-        .preview-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--card-bg);
-            padding: 8px 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        /* 完見本（大きな全体図プレビュー）エリア */
+        .preview-section {
             width: 100%;
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             box-sizing: border-box;
-        }
-
-        .preview-box {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ff9ff3, #54a0ff);
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
+            gap: 12px;
         }
 
-        .preview-text {
-            font-size: 0.8rem;
-            color: #57606f;
+        .preview-canvas-box {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #f1f2f6;
+            flex-shrink: 0;
+            background: #eee;
         }
 
-        .preview-text strong {
+        .preview-canvas-box canvas {
+            width: 100%;
+            height: 100%;
             display: block;
+        }
+
+        .preview-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .preview-info strong {
+            font-size: 0.9rem;
             color: var(--primary);
-            font-size: 0.85rem;
+        }
+
+        .preview-info span {
+            font-size: 0.75rem;
+            color: #747d8c;
+            line-height: 1.4;
         }
 
         .message {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #747d8c;
             text-align: center;
             height: 1.2em;
         }
 
-        /* 2x2 パズルボード */
+        /* 2x2 スライドパズルボード */
         .puzzle-board {
             width: 100%;
             aspect-ratio: 1 / 1;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
-            gap: 6px;
+            gap: 4px;
             background: #2f3542;
-            padding: 6px;
+            padding: 4px;
             border-radius: 16px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             box-sizing: border-box;
             overflow: hidden;
         }
 
-        .slot {
-            background: #dfe4ea;
+        .tile {
+            background: #ffffff;
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            border-radius: 8px;
-            transition: transform 0.15s;
+            border-radius: 10px;
+            transition: transform 0.1s;
         }
 
-        .slot:active {
-            transform: scale(0.96);
+        .tile:active {
+            transform: scale(0.97);
         }
 
-        .piece {
+        .tile canvas {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #ff9ff3, #54a0ff);
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            box-sizing: border-box;
-            border: 2px solid rgba(255,255,255,0.4);
-            border-radius: 8px;
+            display: block;
+            pointer-events: none;
         }
 
-        .piece span.num {
-            font-size: 0.75rem;
-            background: rgba(0,0,0,0.3);
-            color: white;
-            padding: 1px 6px;
-            border-radius: 10px;
-            margin-top: 2px;
+        /* 空白マス（スライド用） */
+        .tile.empty {
+            background: #dcdde1;
+            cursor: default;
         }
-
-        .piece.selected {
-            border: 3px solid #fffa65;
-            z-index: 10;
-            box-shadow: 0 0 12px rgba(255,250,101,0.9);
+        .tile.empty canvas {
+            display: none;
         }
 
         /* クリア後のストーリー＆保存エリア */
@@ -214,6 +209,12 @@
             box-sizing: border-box;
             text-align: center;
             display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .story-box h2 {
@@ -246,49 +247,53 @@
 <body>
 
     <header>
-        <h1>📖 TalePuzzle - オーダーメイド</h1>
+        <h1>📖 TalePuzzle - スライド絵本</h1>
     </header>
 
     <div class="container">
-        <!-- テーマ入力カード -->
+        <!-- テーマ入力 -->
         <div class="generator-card">
-            <label for="themeInput">✨ 好きなテーマを入力して絵本を作る</label>
+            <label for="themeInput">✨ テーマを変えて新しい絵本を作る</label>
             <div class="input-group">
-                <input type="text" id="themeInput" value="宇宙の猫" placeholder="例: 森のくま、魔法の国...">
+                <input type="text" id="themeInput" value="優しい人" placeholder="例: 宇宙の猫、森のくま...">
                 <button class="generate-btn" id="generateBtn">生成する</button>
             </div>
         </div>
 
-        <!-- 完成見本ヒント -->
-        <div class="preview-container">
-            <div class="preview-box" id="previewIcon">🐱</div>
-            <div class="preview-text">
-                <strong id="previewTitle">テーマ: 宇宙の猫</strong>
-                <span>ピースをタップして絵を完成させよう</span>
+        <!-- 完成見本（全体図） -->
+        <div class="preview-section">
+            <div class="preview-canvas-box">
+                <canvas id="previewCanvas" width="160" height="160"></canvas>
+            </div>
+            <div class="preview-info">
+                <strong id="previewTitle">テーマ: 優しい人</strong>
+                <span>この全体図を目指して、隣の空白をタップしてピースをスライドさせよう！</span>
             </div>
         </div>
 
-        <div class="message" id="message">ピースをタップして選択し、入れ替えてね！</div>
+        <div class="message" id="message">隣接するピースをタップして動かしてね！</div>
 
-        <!-- 2x2 パズルボード -->
+        <!-- 2x2 スライドパズルボード (3枚の絵ピース + 1つの空白) -->
         <div class="puzzle-board" id="board"></div>
 
         <!-- クリア後に出現するストーリー＆保存ボックス -->
         <div class="story-box" id="storyBox">
-            <h2>✨ オリジナル絵本が完成しました！</h2>
-            <p id="storyText">「星の海を渡る宇宙猫は、きらめく流星を追いかけて新しい冒険の扉を開きました。」</p>
+            <h2>✨ 絵本が完成しました！</h2>
+            <p id="storyText">「優しい人の温かな笑顔が、まわりの人々の心をそっと包み込みました。」</p>
             <button class="save-btn" id="saveBtn">💾 この絵本をスマホに保存する</button>
         </div>
     </div>
 
     <script>
-        const totalPieces = 4;
-        let boardState = []; 
-        let selectedIndex = null;
+        const size = 2; // 2x2
+        const totalTiles = size * size; // 4
+        let boardState = [0, 1, 2, 3]; // 3が空白(空きマス)
+        let currentTheme = "優しい人";
+        let currentStory = "「優しい人の温かな笑顔が、まわりの人々の心をそっと包み込みました。」";
 
         const themeInput = document.getElementById('themeInput');
         const generateBtn = document.getElementById('generateBtn');
-        const previewIcon = document.getElementById('previewIcon');
+        const previewCanvas = document.getElementById('previewCanvas');
         const previewTitle = document.getElementById('previewTitle');
         const boardEl = document.getElementById('board');
         const messageEl = document.getElementById('message');
@@ -296,112 +301,169 @@
         const storyText = document.getElementById('storyText');
         const saveBtn = document.getElementById('saveBtn');
 
-        // テーマに応じたダミー生成データ（AI連携のベース）
-        let currentThemeData = {
-            title: "宇宙の猫",
-            icon: "🐱",
-            story: "「星の海を渡る宇宙猫は、きらめく流星を追いかけて新しい冒険の扉を開きました。」",
-            pieces: [
-                { icon: '🐱', num: '1' },
-                { icon: '🚀', num: '2' },
-                { icon: '🌌', num: '3' },
-                { icon: '⭐', num: '4' }
-            ]
-        };
+        // キャンバスに綺麗な絵本イラストを描画する関数
+        function drawIllustration(canvas, theme, highlightId = -1) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
 
-        function generateNewPuzzle() {
+            // 背景グラデーション
+            const grad = ctx.createLinearGradient(0, 0, w, h);
+            if(theme.includes("猫") || theme.includes("宇宙")) {
+                grad.addColorStop(0, '#70a1ff');
+                grad.addColorStop(1, '#ff6b81');
+            } else if(theme.includes("森") || theme.includes("くま")) {
+                grad.addColorStop(0, '#2ed573');
+                grad.addColorStop(1, '#1e90ff');
+            } else {
+                grad.addColorStop(0, '#ff9ff3');
+                grad.addColorStop(1, '#54a0ff');
+            }
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // 描き込むモチーフ
+            ctx.fillStyle = "white";
+            ctx.font = "bold 32px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            // 全体の中にアイコンや星を描く
+            ctx.fillText("🌟", w * 0.25, h * 0.25);
+            ctx.fillText("📖", w * 0.75, h * 0.25);
+            ctx.fillText("🌸", w * 0.25, h * 0.75);
+            ctx.fillText("💖", w * 0.75, h * 0.75);
+
+            // テーマの文字をうっすら入れる
+            ctx.fillStyle = "rgba(255,255,255,0.85)";
+            ctx.font = "bold 16px sans-serif";
+            ctx.fillText(theme, w / 2, h / 2);
+        }
+
+        // 全体見本を描画
+        function updatePreview() {
+            previewTitle.innerText = `テーマ: ${currentTheme}`;
+            drawIllustration(previewCanvas, currentTheme);
+        }
+
+        // 新しいテーマの生成
+        function generatePuzzle() {
             const val = themeInput.value.trim();
             if(!val) return;
+            currentTheme = val;
+            currentStory = `「${val}の物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」`;
+            storyText.innerText = currentStory;
 
-            // 入力されたテーマに合わせて動的に内容を変更（AI生成のシミュレーション）
-            currentThemeData.title = val;
-            
-            // 簡単なキーワード判定でアイコンやストーリーを変える演出
-            if(val.includes("森") || val.includes("くま")) {
-                currentThemeData.icon = "🐻";
-                currentThemeData.story = `「${val}の物語：静かな森の奥深く、木漏れ日のなかで小さな出会いが訪れました。」`;
-                currentThemeData.pieces = [{icon:'🐻',num:'1'}, {icon:'🌲',num:'2'}, {icon:'🍯',num:'3'}, {icon:'🍃',num:'4'}];
-            } else if(val.includes("魔法") || val.includes("国")) {
-                currentThemeData.icon = "🪄";
-                currentThemeData.story = `「${val}の物語：空に浮かぶお城から、虹色の魔法の粉がふわりと街へ降り注ぎました。」`;
-                currentThemeData.pieces = [{icon:'🪄',num:'1'}, {icon:'🏰',num:'2'}, {icon:'🌈',num:'3'}, {icon:'✨',num:'4'}];
-            } else {
-                currentThemeData.icon = "✨";
-                currentThemeData.story = `「${val}の物語：あなただけの特別なテーマが、今日という日に新しい彩りを与えてくれます。」`;
-                currentThemeData.pieces = [{icon:'✨',num:'1'}, {icon:'📘',num:'2'}, {icon:'🌟',num:'3'}, {icon:'💫',num:'4'}];
-            }
-
-            previewIcon.innerText = currentThemeData.icon;
-            previewTitle.innerText = `テーマ: ${currentThemeData.title}`;
-            storyText.innerText = currentThemeData.story;
-
+            updatePreview();
             initGame();
         }
 
-        generateBtn.onclick = generateNewPuzzle;
+        generateBtn.onclick = generatePuzzle;
 
+        // ゲーム初期化（シャッフル）
         function initGame() {
-            boardState = Array.from({length: totalPieces}, (_, i) => i);
-            
+            // スライドパズルとして解ける状態にするため、正しい状態からランダムに数回スライドさせる
+            boardState = [0, 1, 2, 3]; // 3が空き
             for (let i = 0; i < 10; i++) {
-                const idx1 = Math.floor(Math.random() * totalPieces);
-                const idx2 = Math.floor(Math.random() * totalPieces);
-                [boardState[idx1], boardState[idx2]] = [boardState[idx2], boardState[idx1]];
+                const emptyIdx = boardState.indexOf(3);
+                const neighbors = getNeighbors(emptyIdx);
+                const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+                // 入れ替え
+                [boardState[emptyIdx], boardState[randomNeighbor]] = [boardState[randomNeighbor], boardState[emptyIdx]];
             }
 
+            // もし最初から揃っていたらもう一度
             if (isCompleted()) {
                 initGame();
                 return;
             }
 
-            selectedIndex = null;
             storyBoxEl.style.display = "none";
-            messageEl.innerText = "ピースをタップして入れ替えてね！";
+            messageEl.innerText = "空白の隣のピースをタップしてスライド！";
             render();
         }
 
+        // 隣接するタイインデックスを取得
+        function getNeighbors(idx) {
+            const row = Math.floor(idx / size);
+            const col = idx % size;
+            const neighbors = [];
+            if (row > 0) neighbors.push(idx - size); // 上
+            if (row < size - 1) neighbors.push(idx + size); // 下
+            if (col > 0) neighbors.push(idx - 1); // 左
+            if (col < size - 1) neighbors.push(idx + 1); // 右
+            return neighbors;
+        }
+
+        // 描画
         function render() {
             boardEl.innerHTML = '';
-            
-            for (let i = 0; i < totalPieces; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'slot';
-                
-                const originalPieceId = boardState[i];
-                const pieceDiv = document.createElement('div');
-                pieceDiv.className = 'piece';
-                
-                const data = currentThemeData.pieces[originalPieceId];
-                pieceDiv.innerHTML = `<span>${data.icon}</span><span class="num">${data.num}</span>`;
 
-                if (selectedIndex === i) {
-                    pieceDiv.classList.add('selected');
+            for (let i = 0; i < totalTiles; i++) {
+                const tileValue = boardState[i];
+                const tileDiv = document.createElement('div');
+                tileDiv.className = 'tile';
+
+                if (tileValue === 3) {
+                    // 空白マス
+                    tileDiv.classList.add('empty');
+                } else {
+                    // 絵のピース（全体画像の一部を切り出す）
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 150;
+                    canvas.height = 150;
+                    const ctx = canvas.getContext('2d');
+
+                    // 本来のタイル位置（正解の形）に基づく切り出し元座標
+                    const origRow = Math.floor(tileValue / size);
+                    const origCol = tileValue % size;
+                    
+                    const srcX = origCol * (300 / size);
+                    const srcY = origRow * (300 / size);
+                    const srcSize = 300 / size;
+
+                    // 一度大きめの隠しキャンバスで全体を描いてからピースごとに切り出す
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = 300;
+                    tempCanvas.height = 300;
+                    drawIllustration(tempCanvas, currentTheme);
+
+                    ctx.drawImage(tempCanvas, srcX, srcY, srcSize, srcSize, 0, 0, 150, 150);
+
+                    // ピースに番号を小さく添える
+                    ctx.fillStyle = "rgba(0,0,0,0.5)";
+                    ctx.fillRect(4, 4, 24, 24);
+                    ctx.fillStyle = "white";
+                    ctx.font = "bold 14px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(tileValue + 1, 16, 16);
+
+                    tileDiv.appendChild(canvas);
+
+                    tileDiv.onclick = () => {
+                        handleTileClick(i);
+                    };
                 }
 
-                slot.onclick = () => {
-                    handleSlotClick(i);
-                };
-
-                slot.appendChild(pieceDiv);
-                boardEl.appendChild(slot);
+                boardEl.appendChild(tileDiv);
             }
 
             checkClear();
         }
 
-        function handleSlotClick(index) {
-            if (selectedIndex === null) {
-                selectedIndex = index;
-                messageEl.innerText = "ピースを選択中。入れ替えるマスをタップ！";
-            } else {
-                const temp = boardState[selectedIndex];
-                boardState[selectedIndex] = boardState[index];
-                boardState[index] = temp;
+        // タイルクリック時（空白の隣ならスライド）
+        function handleTileClick(index) {
+            const emptyIdx = boardState.indexOf(3);
+            const neighbors = getNeighbors(emptyIdx);
 
-                selectedIndex = null;
-                messageEl.innerText = "ピースを入れ替えました！";
+            if (neighbors.includes(index)) {
+                // 空白と入れ替え
+                [boardState[emptyIdx], boardState[index]] = [boardState[index], boardState[emptyIdx]];
+                render();
+            } else {
+               messageEl.innerText = "そのピースは動かせません（空白の隣をタップ）";
             }
-            render();
         }
 
         function isCompleted() {
@@ -410,15 +472,17 @@
 
         function checkClear() {
             if (isCompleted()) {
-                messageEl.innerText = "🎉 クリア！オリジナル絵本が完成しました！";
+                messageEl.innerText = "🎉 パズルクリア！綺麗な絵本が完成しました！";
                 storyBoxEl.style.display = "block";
             }
         }
 
         saveBtn.onclick = () => {
-            alert("【保存成功】\nオーダーメイド絵本がスマホの写真フォルダーに保存されました！");
+            alert("【保存成功】\n完成したスライド絵本がスマホの写真フォルダーに保存されました！");
         };
 
+        // 初期化実行
+        updatePreview();
         initGame();
     </script>
 </body>
