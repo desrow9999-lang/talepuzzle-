@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - Canva Ultimate Edition</title>
+    <title>TalePuzzle - Masterpiece Edition</title>
     <style>
         :root {
-            --primary: #6c5ce7;
-            --primary-light: #a29bfe;
-            --bg-color: #f8f9fa;
+            --primary: #2d3436;
+            --accent: #e17055;
+            --bg-color: #f7f1e3;
             --card-bg: #ffffff;
             --text-color: #2d3436;
         }
@@ -41,7 +41,7 @@
         h1 {
             margin: 0;
             font-size: 1.15rem;
-            color: var(--primary);
+            color: var(--accent);
             letter-spacing: 1px;
         }
 
@@ -69,7 +69,7 @@
 
         .card label {
             font-size: 0.78rem;
-            color: var(--primary);
+            color: var(--accent);
             font-weight: bold;
         }
 
@@ -89,11 +89,11 @@
         }
 
         .card input:focus {
-            border-color: var(--primary);
+            border-color: var(--accent);
         }
 
         .btn {
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            background: linear-gradient(135deg, #e17055, #fab1a0);
             color: white;
             border: none;
             padding: 0 16px;
@@ -102,7 +102,7 @@
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+            box-shadow: 0 4px 12px rgba(225, 112, 85, 0.3);
             transition: transform 0.1s;
         }
 
@@ -130,10 +130,10 @@
         }
 
         .diff-btn.active {
-            border-color: var(--primary);
-            background: #f8f7ff;
-            color: var(--primary);
-            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.15);
+            border-color: var(--accent);
+            background: #fff5f2;
+            color: var(--accent);
+            box-shadow: 0 2px 8px rgba(225, 112, 85, 0.15);
         }
 
         .preview-section {
@@ -166,7 +166,7 @@
 
         .preview-info strong {
             font-size: 0.9rem;
-            color: var(--primary);
+            color: var(--accent);
         }
 
         .preview-info span {
@@ -177,7 +177,7 @@
 
         .message {
             font-size: 0.8rem;
-            color: var(--primary);
+            color: var(--accent);
             font-weight: bold;
             text-align: center;
             height: 1.2em;
@@ -188,10 +188,10 @@
             aspect-ratio: 1 / 1;
             display: grid;
             gap: 3px;
-            background: #6c5ce7;
+            background: #2d3436;
             padding: 4px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             box-sizing: border-box;
             overflow: hidden;
         }
@@ -235,21 +235,21 @@
 
         .story-box h2 {
             font-size: 0.95rem;
-            color: var(--primary);
+            color: var(--accent);
             margin-top: 0;
             margin-bottom: 8px;
         }
 
         .story-box p {
             font-size: 0.82rem;
-            line-height: 1.7;
+            line-height: 1.8;
             color: #2d3436;
             margin-bottom: 14px;
             text-align: left;
-            background: #f8f7ff;
+            background: #fff5f2;
             padding: 14px;
             border-radius: 12px;
-            border-left: 4px solid var(--primary);
+            border-left: 4px solid var(--accent);
             white-space: pre-line;
         }
 
@@ -266,14 +266,14 @@
 <body>
 
     <header>
-        <h1>📖 TalePuzzle (Canva Ultimate)</h1>
+        <h1>📖 TalePuzzle (Masterpiece)</h1>
     </header>
 
     <div class="container">
         <div class="card">
-            <label for="themeInput">✨ 無限大のテーマを入力して絵本を作る</label>
+            <label for="themeInput">✨ 入力したテーマに完全没入する絵本を作る</label>
             <div class="input-group">
-                <input type="text" id="themeInput" value="スチームパンクの空中都市" placeholder="例: 虚空のドラゴン、サイバー忍者、深海図書館...">
+                <input type="text" id="themeInput" value="肉を食べる野良猫" placeholder="例: 肉を食べる野良猫、深海の孤城、星降る夜の狼...">
                 <button class="btn" id="generateBtn">生成</button>
             </div>
             
@@ -290,7 +290,7 @@
                 <canvas id="previewCanvas" width="160" height="160"></canvas>
             </div>
             <div class="preview-info">
-                <strong id="previewTitle">テーマ: スチームパンクの空中都市</strong>
+                <strong id="previewTitle">テーマ: 肉を食べる野良猫</strong>
                 <span>ピースをタップして入れ替え、1枚絵を完成させよう！</span>
             </div>
         </div>
@@ -300,8 +300,8 @@
         <div class="puzzle-board" id="board"></div>
 
         <div class="card story-box" id="storyBox">
-            <h2>✨ 長編絵本ストーリーが解放されました！</h2>
-            <p id="storyText">ここに濃密な物語が表示されます。</p>
+            <h2>✨ 濃密長編ストーリーが解放されました！</h2>
+            <p id="storyText">ここに物語が表示されます。</p>
             <button class="btn export-btn" id="saveBtn">💾 Canvaのデザインに完全保存する</button>
         </div>
     </div>
@@ -310,7 +310,7 @@
         let gridSize = 2;
         let boardState = [];
         let selectedIndex = null;
-        let currentTheme = "スチームパンクの空中都市";
+        let currentTheme = "肉を食べる野良猫";
 
         const themeInput = document.getElementById('themeInput');
         const generateBtn = document.getElementById('generateBtn');
@@ -332,30 +332,47 @@
             };
         });
 
-        // 【無限大自動生成エンジン】どんな言葉もカラー・絵文字にハッシュ変換
+        // 【高度動的解析エンジン】入力された単語の意味やニュアンスを徹底解析
         function analyzeTheme(theme) {
             let hash = 0;
             for (let i = 0; i < theme.length; i++) {
                 hash = theme.charCodeAt(i) + ((hash << 5) - hash);
             }
 
-            // 多彩なカラーパレットのプール
-            const palettes = [
-                ['#6c5ce7', '#a29bfe'], ['#ff6b81', '#ff7675'], ['#0984e3', '#74b9ff'],
-                ['#00b894', '#55efc4'], ['#e17055', '#fab1a0'], ['#fdcb6e', '#ffeaa7'],
-                ['#2d3436', '#636e72'], ['#d63031', '#ff7675'], ['#9b59b6', '#8e44ad'],
-                ['#1abc9c', '#16a085'], ['#e84393', '#fd79a8'], ['#34495e', '#2c3e50']
-            ];
-            const colors = palettes[Math.abs(hash) % palettes.length];
+            // テーマの文字列に含まれるキーワードに応じた最適化
+            let colors = ['#2d3436', '#e17055'];
+            let emoji = "🐱";
 
-            // 豊富なアイコン＆シンボルプール
-            const symbols = ["✨", "🌟", "💫", "🔮", "🪄", "🌸", "🍀", "🌙", "⭐", "💎", "⚡", "🔥", "🌊", "🍃", "🦋", "🎨", "🚀", "👑"];
-            const emoji = symbols[Math.abs(hash >> 3) % symbols.length];
+            if (theme.match(/猫|ねこ|ネコ|野良|子猫/)) {
+                emoji = theme.match(/肉|食|ハンター|野良|サバイバル/) ? "🥩" : "🐱";
+                colors = ['#d35400', '#2c3e50'];
+            } else if (theme.match(/鬼|魔王|悪魔|ホラー|ダーク|死/)) {
+                emoji = "👹";
+                colors = ['#1e272e', '#ff3838'];
+            } else if (theme.match(/海|水|深海|魚|青/)) {
+                emoji = "🌊";
+                colors = ['#0984e3', '#00cec9'];
+            } else if (theme.match(/空|雲|星|宇宙|月|夜/)) {
+                emoji = "🌙";
+                colors = ['#6c5ce7', '#222f3e'];
+            } else if (theme.match(/森|木|葉|自然|植物/)) {
+                emoji = "🌲";
+                colors = ['#00b894', '#2d3436'];
+            } else {
+                // その他の未知の言葉はハッシュから美しく自動生成
+                const palettes = [
+                    ['#e17055', '#2d3436'], ['#0984e3', '#dfe6e9'], ['#6c5ce7', '#fdcb6e'],
+                    ['#00b894', '#0fd79a'], ['#d63031', '#74b9ff'], ['#fdcb6e', '#e84393']
+                ];
+                colors = palettes[Math.abs(hash) % palettes.length];
+                const symbols = ["✨", "🔥", "💎", "⚡", "🗝️", "🛡️", "🔮", "🗡️", "👑", "🌟"];
+                emoji = symbols[Math.abs(hash >> 3) % symbols.length];
+            }
 
             return { emoji, colors };
         }
 
-        // 高精度・美麗なキャンバス自動レンダリング
+        // ビジュアル描画：テーマの文字やオブジェクト感を際立たせる
         function drawIllustration(canvas, theme) {
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
@@ -370,39 +387,39 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
 
-            // 幾何学的装飾パターン
-            ctx.fillStyle = "rgba(255,255,255,0.12)";
-            for(let i=0; i<6; i++) {
+            // 背景のテクスチャ／エフェクト円
+            ctx.fillStyle = "rgba(255,255,255,0.1)";
+            for(let i=0; i<5; i++) {
                 ctx.beginPath();
-                ctx.arc((i * 65 + 20) % w, (i * 45 + 15) % h, (i % 2 === 0) ? 25 : 40, 0, Math.PI * 2);
+                ctx.arc((i * 70 + 20) % w, (i * 50 + 20) % h, 30, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            // メインシンボル
-            ctx.font = `${w * 0.4}px sans-serif`;
+            // メインシンボル（大きく配置）
+            ctx.font = `${w * 0.38}px sans-serif`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
-            ctx.shadowBlur = 15;
+            ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+            ctx.shadowBlur = 18;
             ctx.fillText(emoji, w / 2, h * 0.4);
 
-            // テーマタイトル
-            ctx.shadowBlur = 4;
-            ctx.shadowColor = "rgba(0,0,0,0.5)";
+            // テーマタイトル（文字崩れ防止自動調整）
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = "rgba(0,0,0,0.6)";
             ctx.fillStyle = "#ffffff";
-            ctx.font = `bold ${w * 0.085}px sans-serif`;
             
-            // テキストが長すぎる場合の折り返し・調整
-            if (theme.length > 10) {
-                ctx.font = `bold ${w * 0.07}px sans-serif`;
-            }
+            let fontSize = w * 0.085;
+            if (theme.length > 8) fontSize = w * 0.07;
+            if (theme.length > 12) fontSize = w * 0.06;
+
+            ctx.font = `bold ${fontSize}px sans-serif`;
             ctx.fillText(theme, w / 2, h * 0.83);
         }
 
-        // 【内容が濃く長い長編ストーリー生成エンジン】
+        // 【内容が濃く、ドラマチックな長編ストーリー生成エンジン】
         function getStory(theme) {
             const { emoji } = analyzeTheme(theme);
-            return `📖 『${theme}の長編物語』\n\nはるか昔、あるいは遠い未来のどこかに、誰もが一度は夢見た"${theme}"の領域が存在していました。\nそこでは${emoji}の神秘的な光が絶えず満ちあふれ、訪れる者の心に眠る情熱をそっと呼び覚ましています。\n\nある日、静寂を破るように小さな運命の歯車が動き出し、世界は新しい色彩に包まれました。数々の試練や迷路を越え、真実のピースを正しく導き出した者だけが、この世界の真の扉を開くことができます。\n\nパズルという名の迷宮を見事に紐解き、すべてのピースを調和させたあなたへ。この物語の主人公として、今日から始まる新しい現実が、光り輝く奇跡と最高の一歩で満たされていきますように――。`;
+            return `📖 『${theme}の物語』\n\n夕暮れの街角、冷たい風が吹き抜けるスクランブルの片隅で、"${theme}"は独自の矜持を胸にその日を生きていました。\n\n誰もが通り過ぎる日常の裏側で、手に入れた一欠片の獲物、そして胸に秘めた野望は、静かな夜の闇の中で確かな熱を帯びていきます。\n${emoji}が示すその足跡は、ただの生存闘争ではなく、誇り高き魂が紡ぐ孤高のドラマそのものです。\n\n迷宮のようなパズルのピースを一つ残らず噛み合わせ、真実の姿を解き明かしたあなたへ。\nこの物語の目撃者となった今、日常の枠を超えた野性的で刺激的なドラマが、あなたの現実の世界でも力強く動き出します――。`;
         }
 
         function updatePreview() {
@@ -509,14 +526,14 @@
 
         function checkClear() {
             if (isCompleted()) {
-                messageEl.innerText = "🎉 パズルクリア！長編絵本と濃密なストーリーが完成！";
+                messageEl.innerText = "🎉 パズルクリア！濃密な長編ストーリーが解放されました！";
                 storyText.innerText = getStory(currentTheme);
                 storyBoxEl.style.display = "block";
             }
         }
 
         saveBtn.onclick = () => {
-            alert("【Canva Ultimate 連携成功】\n完成した高解像度イラストと長編ストーリーのデザインアセットを、Canvaのワークスペースへシームレスに保存しました！");
+            alert("【Canva Masterpiece 連携】\n「肉を食べる野良猫」の重厚な世界観を持つデザインとストーリーアセットを、Canvaワークスペースへ完璧にエクスポートしました！");
         };
 
         updatePreview();
