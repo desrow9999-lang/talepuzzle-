@@ -52,7 +52,6 @@
             padding-bottom: 40px;
         }
 
-        /* カード共通スタイル */
         .card {
             width: 100%;
             background: var(--card-bg);
@@ -100,11 +99,6 @@
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
-            transition: background 0.2s;
-        }
-
-        .btn:active {
-            background: var(--primary-light);
         }
 
         /* 難易度セレクター */
@@ -179,14 +173,14 @@
             height: 1.2em;
         }
 
-        /* パズルボード（グリッドは動的に変更） */
+        /* パズルボード（1枚絵が綺麗に繋がるように隙間をなくす） */
         .puzzle-board {
             width: 100%;
             aspect-ratio: 1 / 1;
             display: grid;
-            gap: 4px;
-            background: #2f3542;
-            padding: 6px;
+            gap: 2px;
+            background: #ff6b81;
+            padding: 3px;
             border-radius: 16px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             box-sizing: border-box;
@@ -198,12 +192,12 @@
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            border-radius: 8px;
+            border-radius: 4px;
             transition: transform 0.1s, box-shadow 0.2s;
         }
 
         .tile:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
         }
 
         .tile canvas {
@@ -213,6 +207,7 @@
             pointer-events: none;
         }
 
+        /* 選択中のハイライト */
         .tile.selected {
             border: 3px solid #fffa65;
             box-shadow: 0 0 12px rgba(255,250,101,0.9);
@@ -257,7 +252,7 @@
         <div class="card">
             <label for="themeInput">✨ テーマを変えて絵本を作る</label>
             <div class="input-group">
-                <input type="text" id="themeInput" value="優しい人" placeholder="例: 宇宙の猫、森のくま...">
+                <input type="text" id="themeInput" value="森のくまさん" placeholder="例: 宇宙の猫、優しい人...">
                 <button class="btn" id="generateBtn">生成する</button>
             </div>
             
@@ -274,7 +269,7 @@
                 <canvas id="previewCanvas" width="160" height="160"></canvas>
             </div>
             <div class="preview-info">
-                <strong id="previewTitle">テーマ: 優しい人</strong>
+                <strong id="previewTitle">テーマ: 森のくまさん</strong>
                 <span>ピースをタップして入れ替え、元の1枚絵に戻そう！</span>
             </div>
         </div>
@@ -287,7 +282,7 @@
         <!-- クリア後ストーリー -->
         <div class="card story-box" id="storyBox">
             <h2>✨ 絵本が完成しました！</h2>
-            <p id="storyText">「優しい人の温かな笑顔が、まわりの人々の心をそっと包み込みました。」</p>
+            <p id="storyText">「森のくまさんの物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」</p>
             <button class="btn" id="saveBtn" style="padding: 10px 20px; border-radius: 20px;">💾 この絵本をスマホに保存する</button>
         </div>
     </div>
@@ -296,8 +291,8 @@
         let gridSize = 2; // デフォルト 2x2
         let boardState = [];
         let selectedIndex = null;
-        let currentTheme = "優しい人";
-        let currentStory = "「優しい人の温かな笑顔が、まわりの人々の心をそっと包み込みました。」";
+        let currentTheme = "森のくまさん";
+        let currentStory = "「森のくまさんの物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」";
 
         const themeInput = document.getElementById('themeInput');
         const generateBtn = document.getElementById('generateBtn');
@@ -396,7 +391,7 @@
             render();
         }
 
-        // 描画
+        // 描画（番号をなくし、1枚の絵が綺麗につながるようにする）
         function render() {
             boardEl.innerHTML = '';
             boardEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
@@ -429,16 +424,8 @@
                 tempCanvas.height = 300;
                 drawIllustration(tempCanvas, currentTheme);
 
+                // 番号を描画せず、純粋に1枚絵の断片だけを綺麗に切り出す
                 ctx.drawImage(tempCanvas, srcX, srcY, srcSize, srcSize, 0, 0, 150, 150);
-
-                // ピース番号（分かりやすさのため）
-                ctx.fillStyle = "rgba(0,0,0,0.5)";
-                ctx.fillRect(4, 4, 22, 22);
-                ctx.fillStyle = "white";
-                ctx.font = "bold 12px sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(originalPieceId + 1, 15, 15);
 
                 tileDiv.appendChild(canvas);
 
