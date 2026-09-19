@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - 絵本パズル</title>
+    <title>TalePuzzle - Canva Edition</title>
     <style>
         :root {
             --primary: #ff6b81;
@@ -15,7 +15,7 @@
 
         body {
             margin: 0;
-            padding: 0;
+            padding: 10px;
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -23,64 +23,66 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
             touch-action: manipulation;
         }
 
         header {
             width: 100%;
-            padding: 14px 0;
+            padding: 10px 0;
             text-align: center;
             background: var(--card-bg);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
         }
 
         h1 {
             margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--primary);
             letter-spacing: 1px;
         }
 
         .container {
-            width: 92%;
+            width: 100%;
             max-width: 400px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
-            padding-bottom: 40px;
+            padding-bottom: 20px;
         }
 
         .card {
             width: 100%;
             background: var(--card-bg);
-            padding: 14px;
-            border-radius: 16px;
+            padding: 12px;
+            border-radius: 14px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .card label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--primary);
             font-weight: bold;
         }
 
         .input-group {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .card input {
             flex: 1;
-            padding: 9px 12px;
+            padding: 8px 10px;
             border: 2px solid #dfe4ea;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
             outline: none;
             transition: border-color 0.2s;
         }
@@ -93,27 +95,27 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0 16px;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            padding: 0 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
         }
 
-        /* 難易度セレクター */
+        /* 難易度セレクター（初級・中級・上級） */
         .difficulty-selector {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .diff-btn {
             flex: 1;
-            padding: 8px;
+            padding: 6px 4px;
             border: 2px solid #dfe4ea;
             background: #f1f2f6;
-            border-radius: 10px;
-            font-size: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
             font-weight: bold;
             color: #747d8c;
             cursor: pointer;
@@ -130,13 +132,13 @@
         .preview-section {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .preview-canvas-box {
-            width: 75px;
-            height: 75px;
-            border-radius: 10px;
+            width: 65px;
+            height: 65px;
+            border-radius: 8px;
             overflow: hidden;
             border: 2px solid #f1f2f6;
             flex-shrink: 0;
@@ -152,28 +154,28 @@
         .preview-info {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
 
         .preview-info strong {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--primary);
         }
 
         .preview-info span {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #747d8c;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         .message {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #747d8c;
             text-align: center;
             height: 1.2em;
         }
 
-        /* パズルボード（1枚絵が綺麗に繋がるように隙間をなくす） */
+        /* パズルボード */
         .puzzle-board {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -181,8 +183,8 @@
             gap: 2px;
             background: #ff6b81;
             padding: 3px;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-radius: 14px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
             overflow: hidden;
         }
@@ -192,7 +194,7 @@
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            border-radius: 4px;
+            border-radius: 3px;
             transition: transform 0.1s, box-shadow 0.2s;
         }
 
@@ -207,10 +209,9 @@
             pointer-events: none;
         }
 
-        /* 選択中のハイライト */
         .tile.selected {
-            border: 3px solid #fffa65;
-            box-shadow: 0 0 12px rgba(255,250,101,0.9);
+            border: 2px solid #fffa65;
+            box-shadow: 0 0 10px rgba(255,250,101,0.9);
             z-index: 10;
         }
 
@@ -222,29 +223,29 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .story-box h2 {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--primary);
             margin-top: 0;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .story-box p {
-            font-size: 0.85rem;
-            line-height: 1.5;
+            font-size: 0.8rem;
+            line-height: 1.4;
             color: #57606f;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>📖 TalePuzzle - 絵本パズル</h1>
+        <h1>📖 TalePuzzle (Canva App)</h1>
     </header>
 
     <div class="container">
@@ -252,14 +253,15 @@
         <div class="card">
             <label for="themeInput">✨ テーマを変えて絵本を作る</label>
             <div class="input-group">
-                <input type="text" id="themeInput" value="森のくまさん" placeholder="例: 宇宙の猫、優しい人...">
-                <button class="btn" id="generateBtn">生成する</button>
+                <input type="text" id="themeInput" value="可愛い子犬" placeholder="例: 可愛い子犬、怖いウサギ...">
+                <button class="btn" id="generateBtn">生成</button>
             </div>
             
-            <label style="margin-top: 4px;">🧩 難易度（ピース数）</label>
+            <label style="margin-top: 2px;">🧩 難易度</label>
             <div class="difficulty-selector">
-                <button class="diff-btn active" data-size="2">かんたん (2×2)</button>
-                <button class="diff-btn" data-size="3">ちょっと難しい (3×3)</button>
+                <button class="diff-btn active" data-size="2">初級 (2×2)</button>
+                <button class="diff-btn" data-size="3">中級 (3×3)</button>
+                <button class="diff-btn" data-size="4">上級 (4×4)</button>
             </div>
         </div>
 
@@ -269,8 +271,8 @@
                 <canvas id="previewCanvas" width="160" height="160"></canvas>
             </div>
             <div class="preview-info">
-                <strong id="previewTitle">テーマ: 森のくまさん</strong>
-                <span>ピースをタップして入れ替え、元の1枚絵に戻そう！</span>
+                <strong id="previewTitle">テーマ: 可愛い子犬</strong>
+                <span>ピースをタップして入れ替え、1枚絵を完成させよう！</span>
             </div>
         </div>
 
@@ -282,17 +284,17 @@
         <!-- クリア後ストーリー -->
         <div class="card story-box" id="storyBox">
             <h2>✨ 絵本が完成しました！</h2>
-            <p id="storyText">「森のくまさんの物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」</p>
-            <button class="btn" id="saveBtn" style="padding: 10px 20px; border-radius: 20px;">💾 この絵本をスマホに保存する</button>
+            <p id="storyText">「可愛い子犬の物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」</p>
+            <button class="btn" id="saveBtn" style="padding: 8px 16px; border-radius: 16px;">💾 Canvaのデザインに保存</button>
         </div>
     </div>
 
     <script>
-        let gridSize = 2; // デフォルト 2x2
+        let gridSize = 2; // デフォルト 2x2 (初級)
         let boardState = [];
         let selectedIndex = null;
-        let currentTheme = "森のくまさん";
-        let currentStory = "「森のくまさんの物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」";
+        let currentTheme = "可愛い子犬";
+        let currentStory = "「可愛い子犬の物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」";
 
         const themeInput = document.getElementById('themeInput');
         const generateBtn = document.getElementById('generateBtn');
@@ -305,7 +307,7 @@
         const saveBtn = document.getElementById('saveBtn');
         const diffButtons = document.querySelectorAll('.diff-btn');
 
-        // 難易度ボタンの切り替え
+        // 難易度ボタンの切り替え（初級・中級・上級）
         diffButtons.forEach(btn => {
             btn.onclick = (e) => {
                 diffButtons.forEach(b => b.classList.remove('active'));
@@ -315,39 +317,47 @@
             };
         });
 
-        // 綺麗な絵本イラストを描画する関数
+        // イラスト描画関数（テーマに応じたバリエーション）
         function drawIllustration(canvas, theme) {
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
             const h = canvas.height;
 
             const grad = ctx.createLinearGradient(0, 0, w, h);
-            if(theme.includes("猫") || theme.includes("宇宙")) {
+            if(theme.includes("犬") || theme.includes("いぬ") || theme.includes("子犬")) {
+                grad.addColorStop(0, '#f6e58d');
+                grad.addColorStop(1, '#ff7979');
+            } else if(theme.includes("ウサギ") || theme.includes("うさぎ")) {
+                grad.addColorStop(0, '#ff9ff3');
+                grad.addColorStop(1, '#feca57');
+            } else if(theme.includes("猫") || theme.includes("ねこ")) {
                 grad.addColorStop(0, '#70a1ff');
                 grad.addColorStop(1, '#ff6b81');
-            } else if(theme.includes("森") || theme.includes("くま")) {
+            } else {
                 grad.addColorStop(0, '#2ed573');
                 grad.addColorStop(1, '#1e90ff');
-            } else {
-                grad.addColorStop(0, '#ff9ff3');
-                grad.addColorStop(1, '#54a0ff');
             }
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
 
             ctx.fillStyle = "white";
-            ctx.font = "bold 28px sans-serif";
+            ctx.font = "bold 24px sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
-            ctx.fillText("🌟", w * 0.25, h * 0.25);
-            ctx.fillText("📖", w * 0.75, h * 0.25);
-            ctx.fillText("🌸", w * 0.25, h * 0.75);
-            ctx.fillText("💖", w * 0.75, h * 0.75);
+            if(theme.includes("犬") || theme.includes("子犬")) {
+                ctx.fillText("🐶", w * 0.5, h * 0.35);
+            } else if(theme.includes("ウサギ")) {
+                ctx.fillText("🐰", w * 0.5, h * 0.35);
+            } else if(theme.includes("猫")) {
+                ctx.fillText("🐱", w * 0.5, h * 0.35);
+            } else {
+                ctx.fillText("🌟", w * 0.5, h * 0.35);
+            }
 
             ctx.fillStyle = "rgba(255,255,255,0.95)";
-            ctx.font = "bold 14px sans-serif";
-            ctx.fillText(theme, w / 2, h / 2);
+            ctx.font = "bold 13px sans-serif";
+            ctx.fillText(theme, w / 2, h * 0.7);
         }
 
         function updatePreview() {
@@ -359,7 +369,7 @@
             const val = themeInput.value.trim();
             if(!val) return;
             currentTheme = val;
-            currentStory = `「${val}の物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」`;
+            currentStory = `「${val}の物語：あなたの選んだテーマが、Canvaのキャンバスに新しい感動をお届けします。」`;
             storyText.innerText = currentStory;
 
             updatePreview();
@@ -368,13 +378,11 @@
 
         generateBtn.onclick = generatePuzzle;
 
-        // ゲーム初期化（シャッフル）
         function initGame() {
             const totalTiles = gridSize * gridSize;
             boardState = Array.from({length: totalTiles}, (_, i) => i);
             
-            // ランダムにシャッフル
-            for (let i = 0; i < totalTiles * 4; i++) {
+            for (let i = 0; i < totalTiles * 5; i++) {
                 const idx1 = Math.floor(Math.random() * totalTiles);
                 const idx2 = Math.floor(Math.random() * totalTiles);
                 [boardState[idx1], boardState[idx2]] = [boardState[idx2], boardState[idx1]];
@@ -391,7 +399,6 @@
             render();
         }
 
-        // 描画（番号をなくし、1枚の絵が綺麗につながるようにする）
         function render() {
             boardEl.innerHTML = '';
             boardEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
@@ -424,7 +431,6 @@
                 tempCanvas.height = 300;
                 drawIllustration(tempCanvas, currentTheme);
 
-                // 番号を描画せず、純粋に1枚絵の断片だけを綺麗に切り出す
                 ctx.drawImage(tempCanvas, srcX, srcY, srcSize, srcSize, 0, 0, 150, 150);
 
                 tileDiv.appendChild(canvas);
@@ -439,11 +445,10 @@
             checkClear();
         }
 
-        // タップして入れ替える
         function handleTileClick(index) {
             if (selectedIndex === null) {
                 selectedIndex = index;
-                messageEl.innerText = "ピース選択中。入れ替えるもう一つのピースをタップ！";
+                messageEl.innerText = "選択中。もう一つのピースをタップ！";
             } else {
                 const temp = boardState[selectedIndex];
                 boardState[selectedIndex] = boardState[index];
@@ -461,16 +466,15 @@
 
         function checkClear() {
             if (isCompleted()) {
-                messageEl.innerText = "🎉 パズルクリア！綺麗な絵本が完成しました！";
+                messageEl.innerText = "🎉 パズルクリア！絵本が完成しました！";
                 storyBoxEl.style.display = "block";
             }
         }
 
         saveBtn.onclick = () => {
-            alert("【保存成功】\n完成した絵本イラストがスマホの写真フォルダーに保存されました！");
+            alert("【Canva連携】\n完成した絵本イラストをCanvaのデザインボードにエクスポートしました！");
         };
 
-        // 初期化実行
         updatePreview();
         initGame();
     </script>
