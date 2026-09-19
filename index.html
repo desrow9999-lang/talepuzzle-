@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - 1枚絵パズル</title>
+    <title>TalePuzzle - 絵本パズル</title>
     <style>
         :root {
             --primary: #ff6b81;
+            --primary-light: #ff8e9e;
             --bg-color: #fff9f5;
             --card-bg: #ffffff;
             --text-color: #2f3542;
@@ -27,7 +28,7 @@
 
         header {
             width: 100%;
-            padding: 12px 0;
+            padding: 14px 0;
             text-align: center;
             background: var(--card-bg);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -36,7 +37,7 @@
 
         h1 {
             margin: 0;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--primary);
             letter-spacing: 1px;
         }
@@ -48,23 +49,23 @@
             flex-direction: column;
             gap: 12px;
             align-items: center;
-            padding-bottom: 30px;
+            padding-bottom: 40px;
         }
 
-        /* テーマ入力エリア */
-        .generator-card {
+        /* カード共通スタイル */
+        .card {
             width: 100%;
             background: var(--card-bg);
-            padding: 12px 15px;
+            padding: 14px;
             border-radius: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .generator-card label {
+        .card label {
             font-size: 0.8rem;
             color: var(--primary);
             font-weight: bold;
@@ -75,9 +76,9 @@
             gap: 8px;
         }
 
-        .generator-card input {
+        .card input {
             flex: 1;
-            padding: 8px 10px;
+            padding: 9px 12px;
             border: 2px solid #dfe4ea;
             border-radius: 10px;
             font-size: 0.85rem;
@@ -85,38 +86,62 @@
             transition: border-color 0.2s;
         }
 
-        .generator-card input:focus {
+        .card input:focus {
             border-color: var(--primary);
         }
 
-        .generate-btn {
+        .btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0 15px;
+            padding: 0 16px;
             border-radius: 10px;
             font-size: 0.85rem;
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
+            transition: background 0.2s;
         }
 
-        /* 完成見本（全体図プレビュー） */
+        .btn:active {
+            background: var(--primary-light);
+        }
+
+        /* 難易度セレクター */
+        .difficulty-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .diff-btn {
+            flex: 1;
+            padding: 8px;
+            border: 2px solid #dfe4ea;
+            background: #f1f2f6;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #747d8c;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .diff-btn.active {
+            border-color: var(--primary);
+            background: #fff0f3;
+            color: var(--primary);
+        }
+
+        /* 完成見本エリア */
         .preview-section {
-            width: 100%;
-            background: var(--card-bg);
-            padding: 12px;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            box-sizing: border-box;
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
         .preview-canvas-box {
-            width: 80px;
-            height: 80px;
+            width: 75px;
+            height: 75px;
             border-radius: 10px;
             overflow: hidden;
             border: 2px solid #f1f2f6;
@@ -154,14 +179,12 @@
             height: 1.2em;
         }
 
-        /* 2x2 スワップパズルボード（全ピースが絵で埋まる形） */
+        /* パズルボード（グリッドは動的に変更） */
         .puzzle-board {
             width: 100%;
             aspect-ratio: 1 / 1;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 6px;
+            gap: 4px;
             background: #2f3542;
             padding: 6px;
             border-radius: 16px;
@@ -175,8 +198,8 @@
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            border-radius: 10px;
-            transition: transform 0.1s;
+            border-radius: 8px;
+            transition: transform 0.1s, box-shadow 0.2s;
         }
 
         .tile:active {
@@ -190,21 +213,14 @@
             pointer-events: none;
         }
 
-        /* 選択中のハイライト */
         .tile.selected {
             border: 3px solid #fffa65;
             box-shadow: 0 0 12px rgba(255,250,101,0.9);
             z-index: 10;
         }
 
-        /* クリア後のストーリー＆保存エリア */
+        /* ストーリー＆保存エリア */
         .story-box {
-            width: 100%;
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            box-sizing: border-box;
             text-align: center;
             display: none;
             animation: fadeIn 0.4s ease-out;
@@ -228,18 +244,6 @@
             color: #57606f;
             margin-bottom: 12px;
         }
-
-        .save-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(255, 107, 129, 0.4);
-        }
     </style>
 </head>
 <body>
@@ -249,43 +253,48 @@
     </header>
 
     <div class="container">
-        <!-- テーマ入力 -->
-        <div class="generator-card">
-            <label for="themeInput">✨ テーマを変えて新しい絵本を作る</label>
+        <!-- テーマ＆難易度設定 -->
+        <div class="card">
+            <label for="themeInput">✨ テーマを変えて絵本を作る</label>
             <div class="input-group">
                 <input type="text" id="themeInput" value="優しい人" placeholder="例: 宇宙の猫、森のくま...">
-                <button class="generate-btn" id="generateBtn">生成する</button>
+                <button class="btn" id="generateBtn">生成する</button>
+            </div>
+            
+            <label style="margin-top: 4px;">🧩 難易度（ピース数）</label>
+            <div class="difficulty-selector">
+                <button class="diff-btn active" data-size="2">かんたん (2×2)</button>
+                <button class="diff-btn" data-size="3">ちょっと難しい (3×3)</button>
             </div>
         </div>
 
-        <!-- 完成見本（全体図） -->
-        <div class="preview-section">
+        <!-- 完成見本 -->
+        <div class="card preview-section">
             <div class="preview-canvas-box">
                 <canvas id="previewCanvas" width="160" height="160"></canvas>
             </div>
             <div class="preview-info">
                 <strong id="previewTitle">テーマ: 優しい人</strong>
-                <span>ピースをタップして選択し、入れ替えて元の1枚絵に戻そう！</span>
+                <span>ピースをタップして入れ替え、元の1枚絵に戻そう！</span>
             </div>
         </div>
 
         <div class="message" id="message">ピースをタップして選択し、入れ替えてね！</div>
 
-        <!-- 2x2 スワップパズルボード -->
+        <!-- パズルボード -->
         <div class="puzzle-board" id="board"></div>
 
-        <!-- クリア後に出現するストーリー＆保存ボックス -->
-        <div class="story-box" id="storyBox">
+        <!-- クリア後ストーリー -->
+        <div class="card story-box" id="storyBox">
             <h2>✨ 絵本が完成しました！</h2>
             <p id="storyText">「優しい人の温かな笑顔が、まわりの人々の心をそっと包み込みました。」</p>
-            <button class="save-btn" id="saveBtn">💾 この絵本をスマホに保存する</button>
+            <button class="btn" id="saveBtn" style="padding: 10px 20px; border-radius: 20px;">💾 この絵本をスマホに保存する</button>
         </div>
     </div>
 
     <script>
-        const size = 2; // 2x2
-        const totalTiles = size * size; // 4
-        let boardState = [0, 1, 2, 3]; 
+        let gridSize = 2; // デフォルト 2x2
+        let boardState = [];
         let selectedIndex = null;
         let currentTheme = "優しい人";
         let currentStory = "「優しい人の温かな笑顔が、まわりの人々の心をそっと包み込みました。」";
@@ -299,14 +308,24 @@
         const storyBoxEl = document.getElementById('storyBox');
         const storyText = document.getElementById('storyText');
         const saveBtn = document.getElementById('saveBtn');
+        const diffButtons = document.querySelectorAll('.diff-btn');
 
-        // キャンバスに綺麗な絵本イラストを描画する関数
+        // 難易度ボタンの切り替え
+        diffButtons.forEach(btn => {
+            btn.onclick = (e) => {
+                diffButtons.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                gridSize = parseInt(e.target.getAttribute('data-size'));
+                initGame();
+            };
+        });
+
+        // 綺麗な絵本イラストを描画する関数
         function drawIllustration(canvas, theme) {
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
             const h = canvas.height;
 
-            // 背景グラデーション
             const grad = ctx.createLinearGradient(0, 0, w, h);
             if(theme.includes("猫") || theme.includes("宇宙")) {
                 grad.addColorStop(0, '#70a1ff');
@@ -321,9 +340,8 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
 
-            // モチーフの配置
             ctx.fillStyle = "white";
-            ctx.font = "bold 32px sans-serif";
+            ctx.font = "bold 28px sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
@@ -332,19 +350,16 @@
             ctx.fillText("🌸", w * 0.25, h * 0.75);
             ctx.fillText("💖", w * 0.75, h * 0.75);
 
-            // テーマ名
-            ctx.fillStyle = "rgba(255,255,255,0.9)";
-            ctx.font = "bold 15px sans-serif";
+            ctx.fillStyle = "rgba(255,255,255,0.95)";
+            ctx.font = "bold 14px sans-serif";
             ctx.fillText(theme, w / 2, h / 2);
         }
 
-        // 全体見本を描画
         function updatePreview() {
             previewTitle.innerText = `テーマ: ${currentTheme}`;
             drawIllustration(previewCanvas, currentTheme);
         }
 
-        // 新しいテーマの生成
         function generatePuzzle() {
             const val = themeInput.value.trim();
             if(!val) return;
@@ -360,15 +375,16 @@
 
         // ゲーム初期化（シャッフル）
         function initGame() {
-            boardState = [0, 1, 2, 3];
+            const totalTiles = gridSize * gridSize;
+            boardState = Array.from({length: totalTiles}, (_, i) => i);
+            
             // ランダムにシャッフル
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < totalTiles * 4; i++) {
                 const idx1 = Math.floor(Math.random() * totalTiles);
                 const idx2 = Math.floor(Math.random() * totalTiles);
                 [boardState[idx1], boardState[idx2]] = [boardState[idx2], boardState[idx1]];
             }
 
-            // 最初から揃っていたらやり直し
             if (isCompleted()) {
                 initGame();
                 return;
@@ -383,6 +399,10 @@
         // 描画
         function render() {
             boardEl.innerHTML = '';
+            boardEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+            boardEl.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
+
+            const totalTiles = gridSize * gridSize;
 
             for (let i = 0; i < totalTiles; i++) {
                 const originalPieceId = boardState[i];
@@ -392,18 +412,17 @@
                     tileDiv.classList.add('selected');
                 }
 
-                // 絵のピース（全体画像の一部を切り出す）
                 const canvas = document.createElement('canvas');
                 canvas.width = 150;
                 canvas.height = 150;
                 const ctx = canvas.getContext('2d');
 
-                const origRow = Math.floor(originalPieceId / size);
-                const origCol = originalPieceId % size;
+                const origRow = Math.floor(originalPieceId / gridSize);
+                const origCol = originalPieceId % gridSize;
                 
-                const srcX = origCol * (300 / size);
-                const srcY = origRow * (300 / size);
-                const srcSize = 300 / size;
+                const srcX = origCol * (300 / gridSize);
+                const srcY = origRow * (300 / gridSize);
+                const srcSize = 300 / gridSize;
 
                 const tempCanvas = document.createElement('canvas');
                 tempCanvas.width = 300;
@@ -412,14 +431,14 @@
 
                 ctx.drawImage(tempCanvas, srcX, srcY, srcSize, srcSize, 0, 0, 150, 150);
 
-                // ピース番号
+                // ピース番号（分かりやすさのため）
                 ctx.fillStyle = "rgba(0,0,0,0.5)";
-                ctx.fillRect(4, 4, 24, 24);
+                ctx.fillRect(4, 4, 22, 22);
                 ctx.fillStyle = "white";
-                ctx.font = "bold 14px sans-serif";
+                ctx.font = "bold 12px sans-serif";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.fillText(originalPieceId + 1, 16, 16);
+                ctx.fillText(originalPieceId + 1, 15, 15);
 
                 tileDiv.appendChild(canvas);
 
@@ -433,13 +452,12 @@
             checkClear();
         }
 
-        // タップして入れ替える（スワップ式）
+        // タップして入れ替える
         function handleTileClick(index) {
             if (selectedIndex === null) {
                 selectedIndex = index;
                 messageEl.innerText = "ピース選択中。入れ替えるもう一つのピースをタップ！";
             } else {
-                // 入れ替え実行
                 const temp = boardState[selectedIndex];
                 boardState[selectedIndex] = boardState[index];
                 boardState[index] = temp;
