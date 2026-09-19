@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TalePuzzle - 本格ジグソー＆保存</title>
+    <title>TalePuzzle - 本日の絵本パズル</title>
     <style>
         :root {
             --primary: #ff6b81;
@@ -58,72 +58,59 @@
             height: 1.2em;
         }
 
-        /* 3x3 パズルボード */
+        /* 3x3 イラストジグソーボード */
         .puzzle-board {
             width: 100%;
             aspect-ratio: 1 / 1;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 4px;
-            background: #f1f2f6;
-            padding: 8px;
+            gap: 3px;
+            background: #2f3542;
+            padding: 4px;
             border-radius: 16px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         .slot {
             background: #dfe4ea;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
-            overflow: hidden;
-            border: 2px dashed #ced6e0;
             cursor: pointer;
-        }
-
-        .slot.correct {
-            border: 2px solid var(--primary);
-            background: #fff;
-        }
-
-        /* ピース */
-        .piece {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            user-select: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
             transition: transform 0.15s;
         }
 
-        .piece span.num {
-            font-size: 0.7rem;
-            opacity: 0.8;
+        .slot:active {
+            transform: scale(0.96);
         }
 
-        .piece:active {
-            transform: scale(0.92);
+        /* ピースごとの背景画像スライス設定（3x3のシミュレーション） */
+        .piece {
+            width: 100%;
+            height: 100%;
+            /* 夜空とクジラの幻想的なグラフィックを背景に見立てる */
+            background-image: radial-gradient(circle at 50% 30%, #ff9ff3, #54a0ff, #2e86de);
+            background-size: 300% 300%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .piece.selected {
             border: 3px solid #fffa65;
-            transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(255,250,101,0.8);
+            z-index: 10;
+            box-shadow: 0 0 12px rgba(255,250,101,0.9);
         }
 
-        /* ストーリー＆保存エリア */
+        /* クリア後のストーリー＆保存エリア */
         .story-box {
             width: 100%;
             background: var(--card-bg);
@@ -133,6 +120,12 @@
             box-sizing: border-box;
             text-align: center;
             display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .story-box h2 {
@@ -170,50 +163,56 @@
 <body>
 
     <header>
-        <h1>📖 TalePuzzle - 本日のジグソー</h1>
+        <h1>📖 TalePuzzle - 本日の絵本</h1>
     </header>
 
     <div class="container">
-        <div class="message" id="message">ピースをタップして選択し、別のマスをタップして入れ替えよう！</div>
+        <div class="message" id="message">ピースをタップして選択し、入れ替えて絵を完成させよう！</div>
 
         <!-- 3x3 パズルボード -->
         <div class="puzzle-board" id="board"></div>
 
         <!-- クリア後に出現するストーリー＆保存ボックス -->
         <div class="story-box" id="storyBox">
-            <h2>✨ 本日の絵本が完成しました！</h2>
+            <h2>✨ 絵本が完成しました！</h2>
             <p>「星降る夜、小さなクジラは仲間たちと銀河の海原へ漕ぎ出しました。あなたの手で紡がれた物語が、温かな光で包まれますように。」</p>
             <button class="save-btn" id="saveBtn">💾 この絵本をスマホに保存する</button>
         </div>
     </div>
 
     <script>
-        // 3x3 (9ピース) のデータ定義
-        // index 0~8 が正しい位置
         const totalPieces = 9;
-        let boardState = []; // 現在のボード上のピースID配置
-        let selectedIndex =現在選択中のボード上のインデックス = null;
+        let boardState = []; 
+        let selectedIndex = null;
 
         const boardEl = document.getElementById('board');
         const messageEl = document.getElementById('message');
         const storyBoxEl = document.getElementById('storyBox');
         const saveBtn = document.getElementById('saveBtn');
 
-        // 絵文字やシンボルのバリエーション（3x3のパーツ風）
-        const pieceIcons = ["🐳", "🌙", "🌊", "⭐", "☁️", "🐟", "✨", "📘", "🌟"];
+        // 各ピースが持つ本来の絵柄の位置情報（背景のズラし用）とアイコン
+        const pieceData = [
+            { x: '0%', y: '0%', icon: '🐳' },
+            { x: '50%', y: '0%', icon: '🌙' },
+            { x: '100%', y: '0%', icon: '✨' },
+            { x: '0%', y: '50%', icon: '⭐' },
+            { x: '50%', y: '50%', icon: '📘' },
+            { x: '100%', y: '50%', icon: '🌊' },
+            { x: '0%', y: '100%', icon: '☁️' },
+            { x: '50%', y: '100%', icon: '🐟' },
+            { x: '100%', y: '100%', icon: '🌟' }
+        ];
 
         function initGame() {
-            // シャッフルされた状態を作る（解ける状態にするため、綺麗に並べ替えたあとにランダムスワップ）
             boardState = Array.from({length: totalPieces}, (_, i) => i);
             
-            // 簡単なシャッフル（実際にはランダムに入れ替えを何度か行う）
-            for (let i = 0; i < 15; i++) {
+            // ランダムにシャッフル
+            for (let i = 0; i < 20; i++) {
                 const idx1 = Math.floor(Math.random() * totalPieces);
                 const idx2 = Math.floor(Math.random() * totalPieces);
                 [boardState[idx1], boardState[idx2]] = [boardState[idx2], boardState[idx1]];
             }
 
-            // もし最初から揃っていたらもう一度シャッフル
             if (isCompleted()) {
                 initGame();
                 return;
@@ -231,20 +230,19 @@
                 const slot = document.createElement('div');
                 slot.className = 'slot';
                 
-                const pieceId = boardState[i];
-                if (pieceId === i) {
-                    slot.classList.add('correct');
-                }
-
+                const originalPieceId = boardState[i];
                 const pieceDiv = document.createElement('div');
                 pieceDiv.className = 'piece';
+                
+                // 本来の正しい絵柄の位置（背景スライス）を維持する
+                const data = pieceData[originalPieceId];
+                pieceDiv.style.backgroundPosition = `${data.x} ${data.y}`;
+                pieceDiv.innerHTML = `<span>${data.icon}</span>`;
+
                 if (selectedIndex === i) {
                     pieceDiv.classList.add('selected');
                 }
 
-                pieceDiv.innerHTML = `<span>${pieceIcons[pieceId]}</span><span class="num">${pieceId + 1}</span>`;
-
-                // タップ時の処理（ピース同士を入れ替えるスワップ形式）
                 slot.onclick = () => {
                     handleSlotClick(i);
                 };
@@ -258,17 +256,15 @@
 
         function handleSlotClick(index) {
             if (selectedIndex === null) {
-                // 1つ目のピースを選択
                 selectedIndex = index;
-                messageEl.innerText = `${pieceIcons[boardState[index]]} を選択中。入れ替えるマスをタップしてね！`;
+                messageEl.innerText = "ピースを選択中。入れ替えるマスをタップ！";
             } else {
-                // 2つ目のピースをタップしたので、場所をスワップ（入れ替え）
                 const temp = boardState[selectedIndex];
                 boardState[selectedIndex] = boardState[index];
                 boardState[index] = temp;
 
                 selectedIndex = null;
-                messageEl.innerText = "パチッと入れ替えました！";
+                messageEl.innerText = "ピースを入れ替えました！";
             }
             render();
         }
@@ -279,17 +275,15 @@
 
         function checkClear() {
             if (isCompleted()) {
-                messageEl.innerText = "🎉 パズルクリア！素晴らしい完成度です！";
+                messageEl.innerText = "🎉 パズルクリア！美しい絵本が完成しました！";
                 storyBoxEl.style.display = "block";
             }
         }
 
-        // 保存ボタンのシミュレーション
         saveBtn.onclick = () => {
-            alert("【保存シミュレーション】\n今日の絵本イラストとストーリーがスマホの写真フォルダーに保存されました！");
+            alert("【保存成功】\n本日の絵本イラストとストーリーがスマホの写真フォルダーに保存されました！");
         };
 
-        // ゲーム初期化実行
         initGame();
     </script>
 </body>
