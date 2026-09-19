@@ -103,7 +103,7 @@
             white-space: nowrap;
         }
 
-        /* 難易度セレクター（初級・中級・上級） */
+        /* 難易度セレクター */
         .difficulty-selector {
             display: flex;
             gap: 6px;
@@ -236,9 +236,13 @@
 
         .story-box p {
             font-size: 0.8rem;
-            line-height: 1.4;
+            line-height: 1.5;
             color: #57606f;
             margin-bottom: 10px;
+            text-align: left;
+            background: #fff0f3;
+            padding: 10px;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -283,18 +287,17 @@
 
         <!-- クリア後ストーリー -->
         <div class="card story-box" id="storyBox">
-            <h2>✨ 絵本が完成しました！</h2>
-            <p id="storyText">「可愛い子犬の物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」</p>
+            <h2>✨ 絵本ストーリーが解放されました！</h2>
+            <p id="storyText">ここに物語が表示されます。</p>
             <button class="btn" id="saveBtn" style="padding: 8px 16px; border-radius: 16px;">💾 Canvaのデザインに保存</button>
         </div>
     </div>
 
     <script>
-        let gridSize = 2; // デフォルト 2x2 (初級)
+        let gridSize = 2; // デフォルト 2x2
         let boardState = [];
         let selectedIndex = null;
         let currentTheme = "可愛い子犬";
-        let currentStory = "「可愛い子犬の物語：あなたの選んだテーマが、今日だけの素敵なストーリーを紡ぎ出しました。」";
 
         const themeInput = document.getElementById('themeInput');
         const generateBtn = document.getElementById('generateBtn');
@@ -307,7 +310,6 @@
         const saveBtn = document.getElementById('saveBtn');
         const diffButtons = document.querySelectorAll('.diff-btn');
 
-        // 難易度ボタンの切り替え（初級・中級・上級）
         diffButtons.forEach(btn => {
             btn.onclick = (e) => {
                 diffButtons.forEach(b => b.classList.remove('active'));
@@ -317,15 +319,16 @@
             };
         });
 
-        // イラスト描画関数（テーマに応じたバリエーション）
+        // パズルいっぱいにダイナミックなイラストを描画する関数
         function drawIllustration(canvas, theme) {
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
             const h = canvas.height;
 
+            // 背景グラデーション
             const grad = ctx.createLinearGradient(0, 0, w, h);
             if(theme.includes("犬") || theme.includes("いぬ") || theme.includes("子犬")) {
-                grad.addColorStop(0, '#f6e58d');
+                grad.addColorStop(0, '#ffbe76');
                 grad.addColorStop(1, '#ff7979');
             } else if(theme.includes("ウサギ") || theme.includes("うさぎ")) {
                 grad.addColorStop(0, '#ff9ff3');
@@ -340,24 +343,46 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
 
-            ctx.fillStyle = "white";
-            ctx.font = "bold 24px sans-serif";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-
-            if(theme.includes("犬") || theme.includes("子犬")) {
-                ctx.fillText("🐶", w * 0.5, h * 0.35);
-            } else if(theme.includes("ウサギ")) {
-                ctx.fillText("🐰", w * 0.5, h * 0.35);
-            } else if(theme.includes("猫")) {
-                ctx.fillText("🐱", w * 0.5, h * 0.35);
-            } else {
-                ctx.fillText("🌟", w * 0.5, h * 0.35);
+            // 背景にポップな模様を描いてリッチに
+            ctx.fillStyle = "rgba(255,255,255,0.2)";
+            for(let i=0; i<5; i++) {
+                ctx.beginPath();
+                ctx.arc((i * 70) % w, (i * 50) % h, 30, 0, Math.PI * 2);
+                ctx.fill();
             }
 
-            ctx.fillStyle = "rgba(255,255,255,0.95)";
-            ctx.font = "bold 13px sans-serif";
-            ctx.fillText(theme, w / 2, h * 0.7);
+            // メインのキャラクター絵文字を大きく配置（パズルいっぱいに広げる）
+            ctx.font = `${w * 0.45}px sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            let emoji = "🌟";
+            if(theme.includes("犬") || theme.includes("子犬")) emoji = "🐶";
+            else if(theme.includes("ウサギ")) emoji = "🐰";
+            else if(theme.includes("猫")) emoji = "🐱";
+            else if(theme.includes("星") || theme.includes("宇宙")) emoji = "🚀";
+
+            // 影をつけて立体的に
+            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+            ctx.shadowBlur = 10;
+            ctx.fillText(emoji, w / 2, h * 0.42);
+
+            // 影をリセットしてテーマ文字を配置
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "#ffffff";
+            ctx.font = `bold ${w * 0.1}px sans-serif`;
+            ctx.fillText(theme, w / 2, h * 0.82);
+        }
+
+        // テーマに応じた絵本ストーリーを生成する関数
+        function getStory(theme) {
+            if(theme.includes("犬") || theme.includes("子犬")) {
+                return `📖 『${theme}の大冒険』\n\nあたたかな春の日、元気いっぱいの${theme}がトコトコと原っぱへお散歩に出かけました。「今日はどんな素敵な出会いがあるかな？」蝶々を追いかけてピョンッと跳ねた先で、キラキラ光る宝箱を見つけました。お友達と一緒に開けてみると、中からはたくさんの笑顔が飛び出してきたのでした。めでたし、めでたし。`;
+            } else if(theme.includes("ウサギ")) {
+                return `📖 『${theme}の不思議な夜』\n\n月の光が優しく照らす夜、${theme}がこっそり森の奥へ冒険に出発しました。ぴょんぴょん跳ねるたびに、足元から星のステップが浮かび上がります。「みんなに元気を届けよう！」魔法の人参を掲げると、夜空いっぱいに花火が打ち上がりました。`;
+            } else {
+                return `📖 『${theme}の物語』\n\nむかしむかし、あるところに心躍る${theme}の世界がありました。日々の小さな挑戦が、大きな奇跡を引き寄せます。パズルを解き明かしたあなたに、今日最高にハッピーなストーリーが訪れますように！`;
+            }
         }
 
         function updatePreview() {
@@ -369,9 +394,6 @@
             const val = themeInput.value.trim();
             if(!val) return;
             currentTheme = val;
-            currentStory = `「${val}の物語：あなたの選んだテーマが、Canvaのキャンバスに新しい感動をお届けします。」`;
-            storyText.innerText = currentStory;
-
             updatePreview();
             initGame();
         }
@@ -405,6 +427,13 @@
             boardEl.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
 
             const totalTiles = gridSize * gridSize;
+            const imgSize = 300; // 内部描画解像度
+
+            // 元となる1枚絵をバッファキャンバスに作成
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = imgSize;
+            tempCanvas.height = imgSize;
+            drawIllustration(tempCanvas, currentTheme);
 
             for (let i = 0; i < totalTiles; i++) {
                 const originalPieceId = boardState[i];
@@ -415,23 +444,19 @@
                 }
 
                 const canvas = document.createElement('canvas');
-                canvas.width = 150;
-                canvas.height = 150;
+                canvas.width = imgSize / gridSize;
+                canvas.height = imgSize / gridSize;
                 const ctx = canvas.getContext('2d');
 
                 const origRow = Math.floor(originalPieceId / gridSize);
                 const origCol = originalPieceId % gridSize;
                 
-                const srcX = origCol * (300 / gridSize);
-                const srcY = origRow * (300 / gridSize);
-                const srcSize = 300 / gridSize;
+                const srcX = origCol * (imgSize / gridSize);
+                const srcY = origRow * (imgSize / gridSize);
+                const srcSize = imgSize / gridSize;
 
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = 300;
-                tempCanvas.height = 300;
-                drawIllustration(tempCanvas, currentTheme);
-
-                ctx.drawImage(tempCanvas, srcX, srcY, srcSize, srcSize, 0, 0, 150, 150);
+                // 1枚の大きな絵から、対応するピースの部分だけをきれいに切り出してパズル板いっぱいに敷き詰める
+                ctx.drawImage(tempCanvas, srcX, srcY, srcSize, srcSize, 0, 0, canvas.width, canvas.height);
 
                 tileDiv.appendChild(canvas);
 
@@ -466,13 +491,14 @@
 
         function checkClear() {
             if (isCompleted()) {
-                messageEl.innerText = "🎉 パズルクリア！絵本が完成しました！";
+                messageEl.innerText = "🎉 パズルクリア！絵本とストーリーが完成しました！";
+                storyText.innerText = getStory(currentTheme);
                 storyBoxEl.style.display = "block";
             }
         }
 
         saveBtn.onclick = () => {
-            alert("【Canva連携】\n完成した絵本イラストをCanvaのデザインボードにエクスポートしました！");
+            alert("【Canva連携】\n完成した絵本イラストとストーリーをCanvaのデザインボードにエクスポートしました！");
         };
 
         updatePreview();
